@@ -1,0 +1,136 @@
+import React, { useState } from 'react';
+import axios from 'axios';
+import '../App.css';
+
+const Proposal = () => {
+  const [voteType, setVoteType] = useState('찬반');
+  const [title, setTitle] = useState('');
+  const [options, setOptions] = useState(['찬성', '반대']);
+  const [multiple, setMultiple] = useState(0); 
+
+  const handleVoteTypeChange = (type) => {
+    setVoteType(type);
+    if (type === '찬반') {
+      setOptions([]);
+    } else {
+      setOptions(['', '']);
+    }
+  };
+
+  const handleOptionChange = (index, value) => {
+    const updated = [...options];
+    updated[index] = value;
+    setOptions(updated);
+  };
+
+  const addOption = () => setOptions([...options, '']);
+
+  const removeOption = (index) => {
+    const updated = options.filter((_, i) => i !== index);
+    setOptions(updated);
+  };
+
+  const handleSubmit = async () => {
+    const payload = {
+      title,
+      type: voteType === '찬반' ? 'binary' : 'agenda',
+      options: voteType === '찬반' ? ['찬성', '반대'] : options,
+      multiple: voteType === '찬반' ? 1 : multiple,
+    };
+
+    try {
+      await axios.post('http://localhost:8080/vote/proposal', payload);
+      alert('투표가 생성되었습니다!');
+    } catch (error) {
+      console.error('❌ 생성 실패 상세:', error.response?.data || error.message);
+      alert('생성 실패');
+    }
+  };
+
+  return (
+    <div className="proposal-form">
+      <label>투표 유형</label>
+      <div className="radio-group">
+        <label>
+          <input
+            type="radio"
+            checked={voteType === '찬반'}
+            onChange={() => handleVoteTypeChange('찬반')}
+          />{' '}
+          찬반 투표
+        </label>
+        <label>
+          <input
+            type="radio"
+            checked={voteType === '안건'}
+            onChange={() => handleVoteTypeChange('안건')}
+          />{' '}
+          안건 투표
+        </label>
+      </div>
+
+      <label>투표 이름</label>
+      <input
+        type="text"
+        placeholder="투표 이름을 입력해주세요."
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
+
+      {voteType === '안건' && options.length > 2 && (
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '16px' }}>
+          <label htmlFor="multipleSelect" style={{ fontWeight: 600, whiteSpace: 'nowrap', lineHeight: '32px' }}>
+            중복 투표 허용
+          </label>
+          <select
+            id="multipleSelect"
+            style={{ width: '120px', height: '32px', fontSize: '14px', paddingTop: '6px' }}
+            value={multiple}
+            onChange={(e) => setMultiple(Number(e.target.value))}
+          >
+            <option value={0}>불허</option>
+            {Array.from({ length: options.length - 2 }, (_, i) => i + 2).map(v => (
+              <option key={v} value={v}>{v}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {voteType === '안건' && (
+        <div className="options-grid">
+          {options.map((opt, idx) => (
+            <div key={idx} className="option-box">
+              <input
+                type="text"
+                placeholder={`안건 ${idx + 1}`}
+                value={opt}
+                onChange={(e) => handleOptionChange(idx, e.target.value)}
+              />
+              {options.length > 2 && idx >= 2 && (
+                <button
+                  type="button"
+                  className="remove-btn"
+                  onClick={() => removeOption(idx)}
+                  aria-label="삭제"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {voteType === '안건' && (
+        <button type="button" onClick={addOption} style={{ marginTop: '10px' }}>
+          안건 추가
+        </button>
+      )}
+      <button type="button" onClick={handleSubmit}>
+        투표 생성
+      </button>
+    </div>
+  );
+};
+
+export default Proposal;
