@@ -7,26 +7,27 @@ const app = express();
 const PORT = 8080;
 
 app.use(cors({
-  origin: '*', // 개발용 전체 허용
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(express.json()); // JSON 파싱
+app.use(express.json());
 
 // ✅ 투표 생성
 app.post('/vote/proposal', (req, res) => {
-  const { title, type, options, multiple } = req.body;
+  const { topic, options, type, multiple, duration } = req.body;
 
-  if (!title || !type || !Array.isArray(options) || options.length < 2) {
-    return res.status(400).json({ message: 'title, type, options를 모두 입력하세요 (2개 이상)' });
+  if (!topic || !options || !type) {
+    return res.status(400).send('Missing fields');
   }
 
   const poll = {
     id: uuidv4(),
-    title,
-    type, // 'binary' | 'agenda'
+    topic, // ✅ title → topic 변경
+    type,
     multiple: type === 'binary' ? 1 : multiple,
     options,
+    duration: duration || 2,
     votes: Object.fromEntries(options.map(opt => [opt, 0])),
     createdAt: new Date().toISOString()
   };
@@ -43,11 +44,12 @@ app.post('/vote/proposal', (req, res) => {
 });
 
 // ✅ 투표 제출
+// 투표 제출 (hash + option + topic 기반)
 app.post('/vote/submit', (req, res) => {
-  const { pollId, choices } = req.body;
+  const { hash, option, topic } = req.body;
 
-  if (!pollId || !choices || !Array.isArray(choices)) {
-    return res.status(400).json({ message: 'pollId와 choices[]를 입력하세요.' });
+  if (!hash || !option || !topic) {
+    return res.status(400).json({ message: 'hash, option, topic 필드는 필수입니다.' });
   }
 
   if (!fs.existsSync('polls.json')) {
@@ -55,38 +57,34 @@ app.post('/vote/submit', (req, res) => {
   }
 
   const polls = JSON.parse(fs.readFileSync('polls.json', 'utf8'));
-  const poll = polls.find(p => p.id === pollId);
+  const poll = polls.find(p => p.topic === topic);
 
   if (!poll) {
-    return res.status(404).json({ message: '해당 투표를 찾을 수 없습니다.' });
+    return res.status(404).json({ message: '해당 topic의 투표를 찾을 수 없습니다.' });
+  }
+
+  if (!poll.options.includes(option)) {
+    return res.status(400).json({ message: `유효하지 않은 선택지: ${option}` });
   }
 
   if (!poll.votes) {
     poll.votes = {};
   }
 
-  for (const choice of choices) {
-    if (!poll.options.includes(choice)) {
-      return res.status(400).json({ message: `유효하지 않은 선택지: ${choice}` });
-    }
-    if (!poll.votes[choice]) {
-      poll.votes[choice] = 0;
-    }
-    poll.votes[choice] += 1;
+  if (!poll.votes[option]) {
+    poll.votes[option] = 0;
   }
 
+  poll.votes[option] += 1;
+
   // 저장
-  const updatedPolls = polls.map(p => (p.id === pollId ? poll : p));
+  const updatedPolls = polls.map(p => (p.id === poll.id ? poll : p));
   fs.writeFileSync('polls.json', JSON.stringify(updatedPolls, null, 2));
 
   res.json({ message: '투표가 성공적으로 등록되었습니다.', poll });
 });
 
-// ✅ 서버 시작
-app.listen(PORT, () => {
-  console.log(`✅ Server is running on port ${PORT}`);
-});
-
+// ✅ 투표 목록 가져오기
 app.get('/vote/list', (req, res) => {
   if (!fs.existsSync('polls.json')) {
     return res.json([]);
@@ -94,4 +92,9 @@ app.get('/vote/list', (req, res) => {
 
   const polls = JSON.parse(fs.readFileSync('polls.json', 'utf8'));
   res.json(polls);
+});
+
+// ✅ 서버 시작
+app.listen(PORT, () => {
+  console.log(`✅ Server is running on port ${PORT}`);
 });

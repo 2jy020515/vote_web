@@ -1,88 +1,52 @@
 [
   {
-    "id": "1234",
-    "topic": "오늘 점심",
-    "duration": "2",
-    "votes": {
-      "김치찌개": 2,
-      "된장찌개": 1
-    }
-  },
-  {
-    "id": "ffd1e8e7-5c54-46af-8059-90a8a83e1bc4",
-    "title": "안녕",
+    "id": "1167b758-fbc2-4db0-aa1d-aa1b4d96fa9d",
+    "topic": "안녕",
     "type": "binary",
     "multiple": 1,
     "options": [
       "찬성",
       "반대"
     ],
-    "votes": {
-      "찬성": 1,
-      "반대": 0
-    },
-    "createdAt": "2025-06-03T08:06:17.652Z"
-  },
-  {
-    "id": "2ee46485-eae6-4c86-82f3-f83f272886e8",
-    "title": "안녕",
-    "type": "binary",
-    "multiple": 1,
-    "options": [
-      "찬성",
-      "반대"
-    ],
+    "duration": 2,
     "votes": {
       "찬성": 0,
       "반대": 0
     },
-    "createdAt": "2025-06-03T08:09:01.756Z"
+    "createdAt": "2025-06-04T07:41:55.381Z"
   },
   {
-    "id": "9a2e3258-55bd-466b-a5ee-a69fa247505c",
-    "title": "ㅇㅇ",
-    "type": "binary",
-    "multiple": 1,
-    "options": [
-      "찬성",
-      "반대"
-    ],
-    "votes": {
-      "찬성": 0,
-      "반대": 0
-    },
-    "createdAt": "2025-06-03T08:11:30.940Z"
-  },
-  {
-    "id": "ea025a0c-d218-4a57-8937-8cde7fde5dd0",
-    "title": "짜장면",
-    "type": "binary",
-    "multiple": 1,
-    "options": [
-      "찬성",
-      "반대"
-    ],
-    "votes": {
-      "찬성": 1,
-      "반대": 0
-    },
-    "createdAt": "2025-06-03T08:15:49.650Z"
-  },
-  {
-    "id": "5afb9e39-9fdb-4638-b648-d340ddc5829e",
-    "title": "마라탕",
+    "id": "99313769-6479-4481-9382-27df34e661da",
+    "topic": "떡볶이",
     "type": "agenda",
     "multiple": 2,
     "options": [
-      "맛있다",
-      "맛없다",
-      "그저그렇다"
+      "좋다",
+      "싫다",
+      "그저 그렇다"
     ],
+    "duration": 2,
     "votes": {
-      "맛있다": 0,
-      "맛없다": 0,
-      "그저그렇다": 0
+      "좋다": 0,
+      "싫다": 0,
+      "그저 그렇다": 0
     },
-    "createdAt": "2025-06-03T08:26:51.449Z"
+    "createdAt": "2025-06-04T07:42:14.485Z"
+  },
+  {
+    "id": "5d0eefe8-d6be-4ed8-a6b4-8eb9cc6c38e4",
+    "topic": "졸업",
+    "type": "binary",
+    "multiple": 1,
+    "options": [
+      "찬성",
+      "반대"
+    ],
+    "duration": 2,
+    "votes": {
+      "찬성": 0,
+      "반대": 0
+    },
+    "createdAt": "2025-06-04T07:53:48.100Z"
   }
 ]

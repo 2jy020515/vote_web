@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
+import CryptoJS from 'crypto-js';
 
 const Submit = () => {
   const { id } = useParams();
@@ -10,15 +11,15 @@ const Submit = () => {
   useEffect(() => {
     axios.get('http://localhost:8080/vote/list')
       .then(res => {
-        const found = res.data.find(p => p.id === id);
+        const found = res.data.find(p => String(p.id) === String(id));
         if (found) setPoll(found);
       })
       .catch(() => setPoll(null));
-  }, [id]);
+  }, [id]);  
 
-  if (!poll) return <p>잘못된 접근입니다.</p>;
+  if (!poll || !poll.options) return <p>잘못된 접근입니다.</p>;
 
-  const { id: pollId, type, title, options, multiple } = poll;
+  const { type, topic, options, multiple } = poll;
 
   const handleClick = (option) => {
     if (type === 'binary') {
@@ -33,11 +34,17 @@ const Submit = () => {
   };
 
   const handleSubmit = async () => {
+    const randomString = Math.random().toString(36).substring(2);
+    const hash = CryptoJS.SHA256(randomString).toString(CryptoJS.enc.Hex);
+
     try {
-      await axios.post('http://localhost:8080/vote/submit', {
-        pollId,
-        choices: selected
-      });
+      for (const option of selected) {
+        await axios.post('http://localhost:8080/vote/submit', {
+          hash,
+          option,
+          topic
+        });
+      }
       alert('투표가 제출되었습니다!');
     } catch (err) {
       console.error(err);
@@ -47,7 +54,7 @@ const Submit = () => {
 
   return (
     <div className="proposal-form">
-      <label style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{title}</label>
+      <label style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{topic}</label>
       <div className="options-row">
         {options.map((option, idx) => (
           <button

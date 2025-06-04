@@ -4,9 +4,9 @@ import '../App.css';
 
 const Proposal = () => {
   const [voteType, setVoteType] = useState('찬반');
-  const [title, setTitle] = useState('');
+  const [topic, setTopic] = useState('');
   const [options, setOptions] = useState(['찬성', '반대']);
-  const [multiple, setMultiple] = useState(0); 
+  const [multiple, setMultiple] = useState(0);
 
   const handleVoteTypeChange = (type) => {
     setVoteType(type);
@@ -32,10 +32,11 @@ const Proposal = () => {
 
   const handleSubmit = async () => {
     const payload = {
-      title,
+      topic,
       type: voteType === '찬반' ? 'binary' : 'agenda',
       options: voteType === '찬반' ? ['찬성', '반대'] : options,
       multiple: voteType === '찬반' ? 1 : multiple,
+      duration: 2 // 고정값 (예: 2분)
     };
 
     try {
@@ -73,8 +74,8 @@ const Proposal = () => {
       <input
         type="text"
         placeholder="투표 이름을 입력해주세요."
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        value={topic}
+        onChange={(e) => setTopic(e.target.value)}
       />
 
       {voteType === '안건' && options.length > 2 && (

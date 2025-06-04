@@ -10,7 +10,7 @@ const List = () => {
   useEffect(() => {
     axios.get('http://localhost:8080/vote/list')
       .then(res => {
-        const validPolls = res.data.filter(p => p.title);
+        const validPolls = res.data.filter(p => p.topic); // ✅ title → topic
         setPolls(validPolls);
       })
       .catch(err => console.error('불러오기 실패:', err));
@@ -45,7 +45,7 @@ const List = () => {
               onMouseOver={e => e.currentTarget.style.backgroundColor = '#f5f5f5'}
               onMouseOut={e => e.currentTarget.style.backgroundColor = 'white'}
             >
-              {poll.title}
+              {poll.topic}
             </li>
           ))}
         </ul>
