@@ -22,7 +22,7 @@ const Submit = () => {
   const { type, topic, options, multiple } = poll;
 
   const handleClick = (option) => {
-    if (type === 'binary') {
+    if (type === 'binary' || (type === 'agenda' && options.length === 2)) {
       setSelected([option]);
     } else {
       if (selected.includes(option)) {
@@ -31,7 +31,7 @@ const Submit = () => {
         setSelected([...selected, option]);
       }
     }
-  };
+  };  
 
   const handleSubmit = async () => {
     const randomString = Math.random().toString(36).substring(2);
