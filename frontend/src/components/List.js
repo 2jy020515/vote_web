@@ -10,7 +10,7 @@ const List = () => {
   useEffect(() => {
     axios.get('http://localhost:8080/vote/list')
       .then(res => {
-        const validPolls = res.data.filter(p => p.topic); // ✅ title → topic
+        const validPolls = res.data.filter(p => p.topic);
         setPolls(validPolls);
       })
       .catch(err => console.error('불러오기 실패:', err));

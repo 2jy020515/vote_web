@@ -36,7 +36,7 @@ const Proposal = () => {
       type: voteType === '찬반' ? 'binary' : 'agenda',
       options: voteType === '찬반' ? ['찬성', '반대'] : options,
       multiple: voteType === '찬반' ? 1 : multiple,
-      duration: 2 // 고정값 (예: 2분)
+      duration: 2
     };
 
     try {

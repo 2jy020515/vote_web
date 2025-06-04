@@ -13,7 +13,7 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// ✅ 투표 생성
+// 투표 생성
 app.post('/vote/proposal', (req, res) => {
   const { topic, options, type, multiple, duration } = req.body;
 
@@ -23,7 +23,7 @@ app.post('/vote/proposal', (req, res) => {
 
   const poll = {
     id: uuidv4(),
-    topic, // ✅ title → topic 변경
+    topic,
     type,
     multiple: type === 'binary' ? 1 : multiple,
     options,
@@ -43,8 +43,7 @@ app.post('/vote/proposal', (req, res) => {
   res.status(201).json({ message: '투표가 생성되었습니다.', poll });
 });
 
-// ✅ 투표 제출
-// 투표 제출 (hash + option + topic 기반)
+// 투표 제출
 app.post('/vote/submit', (req, res) => {
   const { hash, option, topic } = req.body;
 
@@ -84,7 +83,7 @@ app.post('/vote/submit', (req, res) => {
   res.json({ message: '투표가 성공적으로 등록되었습니다.', poll });
 });
 
-// ✅ 투표 목록 가져오기
+// 투표 목록 가져오기
 app.get('/vote/list', (req, res) => {
   if (!fs.existsSync('polls.json')) {
     return res.json([]);
@@ -94,7 +93,7 @@ app.get('/vote/list', (req, res) => {
   res.json(polls);
 });
 
-// ✅ 서버 시작
+// 서버 시작
 app.listen(PORT, () => {
   console.log(`✅ Server is running on port ${PORT}`);
 });

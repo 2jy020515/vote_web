@@ -1,5 +1,8 @@
-node_modules/
-build/
-.env
+# macOS 시스템 파일
 .DS_Store
+.Trashes
 *.log
+.idea/
+node_modules/
+.vscode/
+Library/
