@@ -5,6 +5,7 @@ import '../App.css';
 const Proposal = () => {
   const [voteType, setVoteType] = useState('찬반');
   const [topic, setTopic] = useState('');
+  const [duration, setDuration] = useState('');
   const [options, setOptions] = useState(['찬성', '반대']);
   const [multiple, setMultiple] = useState(0);
 
@@ -24,7 +25,6 @@ const Proposal = () => {
   };
 
   const addOption = () => setOptions([...options, '']);
-
   const removeOption = (index) => {
     const updated = options.filter((_, i) => i !== index);
     setOptions(updated);
@@ -33,18 +33,24 @@ const Proposal = () => {
   const handleSubmit = async () => {
     const payload = {
       topic,
-      type: voteType === '찬반' ? 'binary' : 'agenda',
-      options: voteType === '찬반' ? ['찬성', '반대'] : options,
-      multiple: voteType === '찬반' ? 1 : multiple,
-      duration: 2
+      duration: Number(duration),
     };
 
     try {
-      await axios.post('http://localhost:8080/vote/proposal', payload);
-      alert('투표가 생성되었습니다!');
-    } catch (error) {
-      console.error('❌ 생성 실패 상세:', error.response?.data || error.message);
-      alert('생성 실패');
+      const res = await axios.post(`http://localhost:8080/vote/proposal`, payload);
+
+      if (res.data.success === "true") {
+        alert("✅ 투표가 정상적으로 생성되었습니다!");
+      } else if (res.data.success === "false") {
+        if (res.data.status === "PROPOSAL_ALREADY_OPEN") {
+          alert("⚠️ 이미 동일한 이름의 투표가 진행 중입니다.");
+        } else {
+          alert(`❌ 알 수 없는 오류: ${res.data.message}`);
+        }
+      }
+    } catch (err) {
+      console.error("❌ 네트워크 오류 또는 서버 문제:", err);
+      alert("서버와 연결할 수 없습니다.");
     }
   };
 
@@ -57,16 +63,14 @@ const Proposal = () => {
             type="radio"
             checked={voteType === '찬반'}
             onChange={() => handleVoteTypeChange('찬반')}
-          />{' '}
-          찬반 투표
+          /> 찬반 투표
         </label>
         <label>
           <input
             type="radio"
             checked={voteType === '안건'}
             onChange={() => handleVoteTypeChange('안건')}
-          />{' '}
-          안건 투표
+          /> 안건 투표
         </label>
       </div>
 
@@ -78,8 +82,19 @@ const Proposal = () => {
         onChange={(e) => setTopic(e.target.value)}
       />
 
+      <div style={{ marginBottom: '20px', marginTop: '10px' }}>
+        <label>투표 기간 (분)</label>
+        <input
+          type="number"
+          placeholder="예: 2"
+          value={duration}
+          onChange={(e) => setDuration(e.target.value)}
+          min={1}
+        />
+      </div>
+
       {voteType === '안건' && options.length > 2 && (
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '16px', marginTop: '10px' }}>
           <label htmlFor="multipleSelect" style={{ fontWeight: 600, whiteSpace: 'nowrap', lineHeight: '32px' }}>
             중복 투표 허용
           </label>
@@ -127,6 +142,7 @@ const Proposal = () => {
           안건 추가
         </button>
       )}
+
       <button type="button" onClick={handleSubmit}>
         투표 생성
       </button>

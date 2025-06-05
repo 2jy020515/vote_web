@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import Proposal from './components/Proposal';
 import Submit from './components/Submit';
 import List from './components/List';
+import TestSubmit from './components/TestSubmit';
 
 function App() {
   return (
@@ -30,6 +31,12 @@ function App() {
             >
               투표목록
             </NavLink>
+            <NavLink
+              to="/test-submit"
+              className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
+            >
+              투표 행사
+            </NavLink>
           </nav>
           <div className="auth-buttons">
             <button className="login">LOGIN</button>
@@ -41,6 +48,7 @@ function App() {
             <Route path="/" element={<Proposal />} />
             <Route path="/submit/:id" element={<Submit />} />
             <Route path="/list" element={<List />} />
+            <Route path="/test-submit" element={<TestSubmit />} />
           </Routes>
         </main>
       </div>
