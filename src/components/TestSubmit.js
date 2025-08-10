@@ -1,26 +1,56 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const TestSubmit = () => {
   const [topic, setTopic] = useState('');
   const [option, setOption] = useState('');
-  const [hash, setHash] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async () => {
     setResult(null);
     setError('');
-    try {
-      const res = await axios.post(`/api/v1/auth/submit`, {
-        topic,
-        option,
-        hash,
-      });
+
+    const submitVote = async () => {
+      const accessToken = localStorage.getItem('accessToken');
+      const userHash = localStorage.getItem('userHash');
+
+      const res = await axios.post(
+        `/api/v1/vote/submit`,
+        { topic, option }, // hash는 바디에 넣지 않고 헤더로 보냄
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'X-User-Hash': userHash,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       const data = res.data;
+      console.log("📦 전체 응답:", res);
+      console.log("📄 응답 바디:", data);
+
+      if (data.status === "REFRESHED_TOKEN") {
+        const newAccessToken = res.headers['authorization']?.split(' ')[1];
+        if (newAccessToken) {
+          localStorage.setItem("accessToken", newAccessToken);
+          console.log("♻️ 새 토큰 저장 완료, 재요청 중...");
+          return await submitVote();
+        } else {
+          throw new Error("새로운 액세스 토큰을 찾을 수 없습니다.");
+        }
+      }
+
       if (data.success === true || data.success === "true") {
         setResult("✅ 투표 제출 성공!");
+      } else if (data.success === false && data.status === "UNAUTHORIZED") {
+        setError("⚠️ 로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("userHash");
+        setTimeout(() => navigate('/login'), 1500);
       } else {
         switch (data.status) {
           case "DUPLICATE_VOTE_SUBMISSION":
@@ -36,9 +66,21 @@ const TestSubmit = () => {
             setError(`❌ 알 수 없는 오류: ${data.message}`);
         }
       }
+    };
+
+    try {
+      await submitVote();
     } catch (err) {
       console.error(err);
-      setError("🚨 서버 연결 또는 요청 중 오류가 발생했습니다.");
+
+      if (err.response?.data?.status === "UNAUTHORIZED") {
+        setError("⚠️ 로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("userHash");
+        setTimeout(() => navigate('/login'), 1500);
+      } else {
+        setError("🚨 서버 연결 또는 요청 중 오류가 발생했습니다.");
+      }
     }
   };
 
@@ -58,13 +100,6 @@ const TestSubmit = () => {
         placeholder="선택한 옵션 (option)"
         value={option}
         onChange={(e) => setOption(e.target.value)}
-        style={{ width: '100%', marginBottom: '10px' }}
-      />
-      <input
-        type="text"
-        placeholder="해시값 (hash)"
-        value={hash}
-        onChange={(e) => setHash(e.target.value)}
         style={{ width: '100%', marginBottom: '10px' }}
       />
       <button onClick={handleSubmit}>제출</button>

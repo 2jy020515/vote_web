@@ -24,6 +24,7 @@ API.interceptors.response.use(
   async error => {
     const originalRequest = error.config;
 
+    // 리프레시 토큰으로 재발급 시도 조건 (status === 'REFRESH_TOKEN' 일 때)
     if (
       error.response &&
       error.response.data?.status === 'REFRESH_TOKEN' &&
@@ -45,27 +46,28 @@ API.interceptors.response.use(
           }
         }
       } catch (refreshError) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('userHash');
-        if (!window._redirectingToLogin) {
-          window._redirectingToLogin = true;
-          window.location.href = '/login';
-        }
+        // 리프레시 토큰 만료된 상태: 로그아웃 처리 후 로그인 페이지 이동
+        logoutAndRedirect();
         return Promise.reject(refreshError);
       }
     }
 
+    // 401 Unauthorized 응답 (예: 액세스토큰 만료 및 재발급 실패 등)
     if (error.response && error.response.status === 401) {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('userHash');
-      if (!window._redirectingToLogin) {
-        window._redirectingToLogin = true;
-        window.location.href = '/login';
-      }
+      logoutAndRedirect();
     }
 
     return Promise.reject(error);
   }
 );
+
+function logoutAndRedirect() {
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('userHash');
+  if (!window._redirectingToLogin) {
+    window._redirectingToLogin = true;
+    window.location.href = '/login';
+  }
+}
 
 export default API;

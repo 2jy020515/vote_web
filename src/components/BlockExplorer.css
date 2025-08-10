@@ -31,3 +31,22 @@
   color: red;
   margin-top: 10px;
 }
+
+.block-result table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.block-result th, .block-result td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  vertical-align: top;
+  word-break: break-all;
+  white-space: normal;
+  text-align: left;
+}
+
+.block-result th {
+  background-color: #f2f2f2;
+}

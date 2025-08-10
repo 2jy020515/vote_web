@@ -9,8 +9,15 @@ const VoteBallotQuery = () => {
   const handleSearch = async () => {
     setError('');
     setResult(null);
+
+    const userHash = localStorage.getItem('userHash');
+    if (!userHash) {
+      setError('로그인 정보가 없습니다. 다시 로그인 해주세요.');
+      return;
+    }
+
     try {
-      const res = await API.get(`/api/v1/vote/ballot/${hash}`);
+      const res = await API.get(`/api/v1/query/${hash}/votes`);
       if (res.data.success) {
         setResult(res.data.ballot_list);
       } else {
@@ -23,19 +30,21 @@ const VoteBallotQuery = () => {
 
   return (
     <div className="proposal-form">
-      <h2>사용자 해시로 투표 내역 조회</h2>
+      <h2>투표 해시로 내역 조회</h2>
       <input
         type="text"
         value={hash}
         onChange={(e) => setHash(e.target.value)}
-        placeholder="해시값 입력"
+        placeholder="투표 해시값 입력"
       />
       <button onClick={handleSearch}>조회</button>
-      {error && <p style={{color:'red'}}>{error}</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       {result && (
         <ul>
           {result.map((item, idx) => (
-            <li key={idx}>{item.topic} - {item.selected_options.join(', ')}</li>
+            <li key={idx}>
+              {item.topic} - {item.selected_options}
+            </li>
           ))}
         </ul>
       )}
