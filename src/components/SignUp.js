@@ -23,6 +23,14 @@ const SignUp = () => {
   const validateName = (name) => name.length >= 2 && /^[가-힣a-zA-Z]+$/.test(name.trim());
 
   const handleSubmit = async () => {
+    // 입력칸 체크
+    for (let key in form) {
+      if (!form[key].trim()) {
+        alert('모든 입력 칸을 채워주세요.');
+        return;
+      }
+    }
+
     if (!validateName(form.real_name)) {
       alert('이름은 2자 이상, 한글 또는 영문만 가능합니다.');
       return;
@@ -36,20 +44,25 @@ const SignUp = () => {
       return;
     }
     if (!validatePhone(form.phone_number)) {
-      alert('숫자만 입력하세요.');
+      alert('전화번호는 숫자만 입력하세요 (9~11자리)');
       return;
     }
 
     try {
-      const res = await axios.post(`/api/v1/auth/register`, form);
+      const res = await axios.post(`/api/v1/user/register`, form);
+
       if (res.data.success) {
         alert('✅ 회원가입 성공');
       } else {
-        alert('❌ 회원가입 실패');
+        alert(res.data.message || '회원가입 실패');
       }
     } catch (err) {
-      console.error(err);
-      alert('서버 오류 또는 회원가입 실패');
+      if (err.response && err.response.data && err.response.data.message) {
+        alert(`❌ ${err.response.data.message}`);
+      } else {
+        alert('❌ 서버 오류 또는 회원가입 실패');
+      }
+      console.error(err.response ? err.response.data : err);
     }
   };
 

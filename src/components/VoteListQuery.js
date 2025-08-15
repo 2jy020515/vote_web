@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import '../App.css';
 
 const VoteListQuery = () => {
   const [form, setForm] = useState({
@@ -12,12 +13,20 @@ const VoteListQuery = () => {
   });
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [selectedVote, setSelectedVote] = useState(null); // 클릭한 투표 JSON 상태
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
     setForm({
       ...form,
-      [name]: type === 'checkbox' ? e.target.checked : value,
+      [name]:
+        type === 'checkbox'
+          ? e.target.checked
+          : value === 'true'
+          ? true
+          : value === 'false'
+          ? false
+          : value,
     });
   };
 
@@ -31,19 +40,18 @@ const VoteListQuery = () => {
     }
 
     try {
-      const res = await axios.get(
-        `/api/v1/query/proposal/list`,
-        {
-          params: form,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'X-User-Hash': userHash,
-          },
-        }
-      );
-      if (res.data.success && res.data.status === 'REFERSH_TOKEN') {
+      const res = await axios.get(`/api/v1/query/proposal/list`, {
+        params: form,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'X-User-Hash': userHash,
+        },
+      });
+
+      if (res.data.success && res.data.status === 'REFRESH_TOKEN') {
         const newToken = res.data.access_token;
         localStorage.setItem('accessToken', newToken);
+
         const retryRes = await axios.get(`/api/v1/query/proposal/list`, {
           params: form,
           headers: {
@@ -55,6 +63,7 @@ const VoteListQuery = () => {
       } else {
         setResult(res.data);
       }
+
       setError(null);
     } catch (err) {
       if (
@@ -73,46 +82,67 @@ const VoteListQuery = () => {
     <div className="proposal-form">
       <h2>투표 목록 조회</h2>
 
-      <label>summarize</label>
+      <label>요약 여부</label>
       <select name="summarize" value={form.summarize} onChange={handleChange}>
-        <option value={true}>true</option>
-        <option value={false}>false</option>
+        <option value={true}>예</option>
+        <option value={false}>아니오</option>
       </select>
 
-      <label>expired</label>
+      <label>마감 여부</label>
       <select name="expired" value={form.expired} onChange={handleChange}>
-        <option value={true}>true</option>
-        <option value={false}>false</option>
+        <option value={true}>마감됨</option>
+        <option value={false}>마감 안 됨</option>
       </select>
 
-      <label>sortOrder</label>
+      <label>정렬 순서</label>
       <select name="sortOrder" value={form.sortOrder} onChange={handleChange}>
-        <option value="asc">asc</option>
-        <option value="desc">desc</option>
+        <option value="asc">오름차순</option>
+        <option value="desc">내림차순</option>
       </select>
 
-      <label>sortBy</label>
+      <label>정렬 기준</label>
       <select name="sortBy" value={form.sortBy} onChange={handleChange}>
-        <option value="topic">topic</option>
-        <option value="expiredAt">expiredAt</option>
-        <option value="createAt">createAt</option>
-        <option value="result.count">result.count</option>
+        <option value="topic">주제</option>
+        <option value="expiredAt">마감일</option>
+        <option value="createAt">생성일</option>
+        <option value="result.count">투표 수</option>
       </select>
 
-      <label>page</label>
+      <label>페이지</label>
       <input type="number" name="page" value={form.page} onChange={handleChange} />
 
-      <label>limit</label>
+      <label>한 페이지당 개수</label>
       <input type="number" name="limit" value={form.limit} onChange={handleChange} />
 
       <button onClick={fetchVotes}>목록 조회</button>
 
-      {result && (
-        <pre style={{ whiteSpace: 'pre-wrap', marginTop: '20px' }}>
-          {JSON.stringify(result, null, 2)}
-        </pre>
+      {error && <div className="error-message" style={{ color: 'red', marginTop: '10px' }}>{error.message}</div>}
+
+      {result && result.proposal_list && (
+        <div className="vote-list" style={{ marginTop: '20px' }}>
+          {result.proposal_list.map((proposal, idx) => (
+            <div
+              key={idx}
+              className="vote-card"
+              style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px', cursor: 'pointer' }}
+              onClick={() =>
+                setSelectedVote(prev => prev === proposal ? null : proposal)
+              }
+            >
+              <div className="vote-topic" style={{ fontWeight: 'bold' }}>{proposal.topic}</div>
+              <div className="vote-expired">{proposal.expired ? '종료됨' : '진행 중'}</div>
+              <div className="vote-date">마감일: {new Date(proposal.expired_at).toLocaleString()}</div>
+            </div>
+          ))}
+        </div>
       )}
-      {error && <p style={{ color: 'red' }}>{error.message}</p>}
+
+      {selectedVote && (
+        <div className="raw-response" style={{ marginTop: '20px' }}>
+          <h3>선택한 투표 정보</h3>
+          <pre>{JSON.stringify(selectedVote, null, 2)}</pre>
+        </div>
+      )}
     </div>
   );
 };

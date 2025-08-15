@@ -16,6 +16,11 @@ const Login = () => {
     e.preventDefault();
     setError('');
 
+    if (!form.username || !form.password) {
+      setError('⚠️ 모든 입력칸을 채워주세요.');
+      return;
+    }
+
     try {
       const res = await API.post('/api/v1/user/login', form);
 
@@ -30,20 +35,24 @@ const Login = () => {
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('userHash', userHash);
 
-        setTimeout(() => {
-            alert('✅ 로그인 성공');
-            navigate('/');
-          }, 10);
-        } else {
-        if (res.data.status === 'UNAUTHORIZED') {
-          setError('로그인 인증 실패. 다시 시도해주세요.');
-        } else {
-          setError('알 수 없는 오류가 발생했습니다.');
-        }
+        alert('✅ 로그인 성공');
+        navigate('/');
+        return;
+      }
+
+      if (res.data.message) {
+        setError(`❌ ${res.data.message}`);
+      } else {
+        setError('❌ 로그인 실패');
       }
     } catch (err) {
       console.error('로그인 오류:', err);
-      setError('🚨 서버 연결 오류');
+
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(`❌ ${err.response.data.message}`);
+      } else {
+        setError('🚨 서버 연결 오류');
+      }
     }
   };
 
@@ -56,7 +65,6 @@ const Login = () => {
           placeholder="아이디"
           value={form.username}
           onChange={handleChange}
-          required
           className="auth-input"
         />
         <input
@@ -65,11 +73,10 @@ const Login = () => {
           placeholder="비밀번호"
           value={form.password}
           onChange={handleChange}
-          required
           className="auth-input"
         />
         <button type="submit">로그인</button>
-        {error && <p className="error">{error}</p>}
+        {error && <p>{error}</p>}
       </form>
     </div>
   );

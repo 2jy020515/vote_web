@@ -234,3 +234,105 @@ main {
   font-size: 14px;
   box-sizing: border-box;
 }
+.vote-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.vote-list-item {
+  padding: 12px 16px;
+  border: 1px solid black;
+  border-radius: 8px;
+  background-color: white;
+  color: black;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+}
+
+.vote-list-item:hover {
+  background-color: #f5f5f5;
+}
+.vote-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.vote-card {
+  background: #f5f5f5;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vote-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.vote-topic {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.vote-expired {
+  font-size: 14px;
+  color: #d9534f;
+}
+
+.vote-date {
+  font-size: 12px;
+  color: #777;
+}
+.vote-detail-card {
+  background: #f5f5f5;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  margin-top: 20px;
+}
+
+.vote-detail-card h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.vote-detail-card p {
+  margin: 5px 0;
+}
+
+.vote-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.vote-option {
+  padding: 6px 12px;
+  background-color: #e3e3e3;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.raw-response {
+  margin-top: 20px;
+  background-color: #f4f4f4;
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.9em;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+}

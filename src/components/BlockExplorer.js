@@ -11,6 +11,7 @@ const BlockExplorer = () => {
   const [ballotHash, setBallotHash] = useState('');
   const [proposalDetail, setProposalDetail] = useState(null);
   const [selectedBlock, setSelectedBlock] = useState(null);
+  const [showJson, setShowJson] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -61,6 +62,7 @@ const BlockExplorer = () => {
   const fetchBlockData = async (height) => {
     setError('');
     setSelectedBlock(null);
+    setShowJson(false);
 
     try {
       const res = await axios.get(`http://l4.ai-capstone.store/block/query?height=${height}`);
@@ -69,34 +71,6 @@ const BlockExplorer = () => {
       setError('블록 조회 중 오류가 발생했습니다.');
     }
   };
-
-  const renderHighlightedJSON = (obj) => {
-    const jsonString = JSON.stringify(obj, null, 2);
-    const hashLower = ballotHash.toLowerCase();
-  
-    const regex = new RegExp(`(${hashLower})`, 'gi');
-  
-    const parts = [];
-    let lastIndex = 0;
-  
-    let match;
-    while ((match = regex.exec(jsonString.toLowerCase())) !== null) {
-      const start = match.index;
-      const end = start + match[0].length;
-  
-      parts.push(jsonString.slice(lastIndex, start));
-      parts.push(
-        <span key={start} style={{ color: 'blue', fontWeight: 'bold' }}>
-          {jsonString.slice(start, end)}
-        </span>
-      );
-      lastIndex = end;
-    }
-    parts.push(jsonString.slice(lastIndex));
-  
-    return parts;
-  };
-  
 
   return (
     <div className="proposal-form block-explorer-container">
@@ -163,24 +137,52 @@ const BlockExplorer = () => {
         </div>
       )}
 
-{selectedBlock && (
-  <div className="block-result" style={{ marginTop: 20 }}>
-    <h3>블록 JSON 응답</h3>
-    <pre
-      style={{
-        background: '#f4f4f4',
-        padding: '10px',
-        borderRadius: '5px',
-        overflowX: 'auto',
-        whiteSpace: 'pre-wrap',
-        wordBreak: 'break-word',
-      }}
-    >
-      {renderHighlightedJSON(selectedBlock)}
-    </pre>
-  </div>
-)}
+      {selectedBlock && (
+        <div
+          className="vote-detail-card"
+          onClick={() => setShowJson(prev => !prev)}
+          style={{
+            cursor: 'pointer',
+            marginTop: '20px',
+            padding: '15px',
+            border: '1px solid #ccc',
+            borderRadius: '8px',
+            background: '#fafafa'
+          }}
+        >
+          <h3>블록 정보 (Height: {selectedBlock.block.header.height})</h3>
+          <p><strong>Hash:</strong> {selectedBlock.block_hash}</p>
+          <p><strong>Previous Hash:</strong> {selectedBlock.block.header.prev_block_hash}</p>
+          <p><strong>Merkle Root:</strong> {selectedBlock.block.header.merkle_root}</p>
 
+          <h4>투표 내역</h4>
+          {selectedBlock.block.transactions.map((tx, idx) => (
+            <div key={idx} className="vote-option" style={{ marginLeft: '10px', marginBottom: '5px' }}>
+              <p><strong>옵션:</strong> {tx.option}</p>
+              <p><strong>투표 해시:</strong> {tx.hash}</p>
+              <p><strong>타임스탬프:</strong> {new Date(Number(tx.time_stamp / 1000000)).toLocaleString()}</p>
+            </div>
+          ))}
+
+          {showJson && (
+            <div
+              className="raw-response"
+              style={{
+                marginTop: '10px',
+                background: '#f0f0f0',
+                padding: '10px',
+                borderRadius: '5px',
+                overflowX: 'auto',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word'
+              }}
+            >
+              <h4>원본 JSON 데이터</h4>
+              <pre>{JSON.stringify(selectedBlock, null, 2)}</pre>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

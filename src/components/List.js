@@ -8,42 +8,49 @@ const List = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    API.get('/vote/list')
-      .then(res => {
-        const validPolls = res.data.filter(p => p.topic);
-        setPolls(validPolls);
-      })
-      .catch(err => console.error('불러오기 실패:', err));
+    const fetchPolls = async () => {
+      try {
+        const res = await API.get('/api/v1/query/proposal/list', {
+          params: { expired: false },
+        });
+
+        console.log('API 응답:', res.data);
+
+        if (res.data.success && Array.isArray(res.data.proposal_list)) {
+          const validPolls = res.data.proposal_list.filter(p => !p.expired);
+          setPolls(validPolls);
+        } else {
+          setPolls([]);
+        }
+      } catch (err) {
+        console.error('불러오기 실패:', err);
+        setPolls([]);
+      }
+    };
+
+    fetchPolls();
   }, []);
 
   const handleClick = (poll) => {
-    navigate(`/submit/${poll.id}`);
+    if (poll.id) {
+      navigate(`/submit/${poll.id}`);
+    } else {
+      alert('해당 투표에 ID 값이 없습니다.');
+    }
   };
 
   return (
     <div className="proposal-form">
       <h2>투표 목록</h2>
       {polls.length === 0 ? (
-        <p>투표가 없습니다.</p>
+        <p>진행 중인 투표가 없습니다.</p>
       ) : (
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {polls.map(poll => (
+        <ul className="vote-list">
+          {polls.map((poll, index) => (
             <li
-              key={poll.id}
+              key={index}
+              className="vote-list-item"
               onClick={() => handleClick(poll)}
-              style={{
-                cursor: 'pointer',
-                margin: '10px 0',
-                fontWeight: 'bold',
-                padding: '12px 16px',
-                border: '2px solid black',
-                borderRadius: '8px',
-                backgroundColor: 'white',
-                color: 'black',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseOver={e => e.currentTarget.style.backgroundColor = '#f5f5f5'}
-              onMouseOut={e => e.currentTarget.style.backgroundColor = 'white'}
             >
               {poll.topic}
             </li>

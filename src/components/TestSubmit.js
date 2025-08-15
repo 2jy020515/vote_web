@@ -19,7 +19,7 @@ const TestSubmit = () => {
 
       const res = await axios.post(
         `/api/v1/vote/submit`,
-        { topic, option }, // hash는 바디에 넣지 않고 헤더로 보냄
+        { topic, option },
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -46,13 +46,17 @@ const TestSubmit = () => {
 
       if (data.success === true || data.success === "true") {
         setResult("✅ 투표 제출 성공!");
-      } else if (data.success === false && data.status === "UNAUTHORIZED") {
-        setError("⚠️ 로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("userHash");
-        setTimeout(() => navigate('/login'), 1500);
-      } else {
+        setError('');
+      } 
+      else {
+        const serverMessage = data.message || "알 수 없는 오류 발생";
         switch (data.status) {
+          case "UNAUTHORIZED":
+            setError("⚠️ 로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("userHash");
+            setTimeout(() => navigate('/login'), 1500);
+            break;
           case "DUPLICATE_VOTE_SUBMISSION":
             setError("⚠️ 이미 이 투표에 참여하셨습니다.");
             break;
@@ -63,7 +67,7 @@ const TestSubmit = () => {
             setError("⏳ 투표가 마감되어 제출할 수 없습니다.");
             break;
           default:
-            setError(`❌ 알 수 없는 오류: ${data.message}`);
+            setError(`❌ ${serverMessage}`);
         }
       }
     };
@@ -73,12 +77,16 @@ const TestSubmit = () => {
     } catch (err) {
       console.error(err);
 
-      if (err.response?.data?.status === "UNAUTHORIZED") {
+      if (err.response?.data?.message) {
+        setError(`❌ ${err.response.data.message}`);
+      } 
+      else if (err.response?.data?.status === "UNAUTHORIZED") {
         setError("⚠️ 로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userHash");
         setTimeout(() => navigate('/login'), 1500);
-      } else {
+      } 
+      else {
         setError("🚨 서버 연결 또는 요청 중 오류가 발생했습니다.");
       }
     }
@@ -105,7 +113,7 @@ const TestSubmit = () => {
       <button onClick={handleSubmit}>제출</button>
 
       {result && <p style={{ color: 'green', marginTop: '10px' }}>{result}</p>}
-      {error && <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
+      {error && <p style={{ color: 'red', marginTop: '10px', whiteSpace: 'pre-wrap' }}>{error}</p>}
     </div>
   );
 };

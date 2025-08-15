@@ -43,31 +43,37 @@ const AppContent = () => {
       <header className="navbar">
         <h1 className="logo">✓OTING</h1>
         <nav>
-          <NavLink to="/" end className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            투표생성
-          </NavLink>
-          <NavLink to="/result" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            투표결과
-          </NavLink>
-          <NavLink to="/list" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            투표목록
-          </NavLink>
-          <NavLink to="/test-submit" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            투표행사
-          </NavLink>
-          <NavLink to="/vote-list-query" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            목록조회
-          </NavLink>
-          <NavLink to="/vote-detail-query" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            상세조회
-          </NavLink>
-          <NavLink to="/ballot-query" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            해시조회
-          </NavLink>
-          <NavLink to="/block-explorer" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            블록조회
-          </NavLink>
-        </nav>
+  <NavLink to="/" end className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+    투표생성
+  </NavLink>
+
+  {/* 
+  <NavLink to="/result" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+    투표결과
+  </NavLink>
+  */}
+
+  <NavLink to="/list" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+    투표목록
+  </NavLink>
+  
+  <NavLink to="/test-submit" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+    투표행사
+  </NavLink>
+  <NavLink to="/vote-list-query" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+    목록조회
+  </NavLink>
+  <NavLink to="/vote-detail-query" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+    상세조회
+  </NavLink>
+  <NavLink to="/ballot-query" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+    해시조회
+  </NavLink>
+  <NavLink to="/block-explorer" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+    블록조회
+  </NavLink>
+</nav>
+
 
         <div className="auth-buttons">
           {!isLoggedIn ? (
@@ -87,7 +93,7 @@ const AppContent = () => {
 
       <main>
         <Routes>
-          {/* ✅ 로그인 필요 페이지들 */}
+          {/* 로그인 필요 페이지들 */}
           <Route path="/" element={<ProtectedRoute><Proposal /></ProtectedRoute>} />
           <Route path="/submit/:id" element={<ProtectedRoute><Submit /></ProtectedRoute>} />
           <Route path="/list" element={<ProtectedRoute><List /></ProtectedRoute>} />

@@ -51,20 +51,16 @@ const Proposal = () => {
         setOptions(voteType === '찬반' ? ['찬성', '반대'] : ['', '']);
         setMultiple(0);
       } else {
-        switch (res.data.status) {
-          case 'PROPOSAL_EXPIRED':
-            alert('⏳ 이미 진행되었던 투표입니다.');
-            break;
-          case 'PROPOSAL_ALREADY_OPEN':
-            alert('⚠️ 현재 동일한 이름의 투표가 진행 중입니다.');
-            break;
-          default:
-            alert('❌ 서버 오류가 발생했습니다.');
-        }
+        alert(res.data.message || '❌ 서버 오류가 발생했습니다.');
       }
     } catch (err) {
-      console.error(err);
-      alert('🚨 서버와 연결할 수 없습니다.');
+      // 서버 응답 메시지 확인
+      if (err.response && err.response.data && err.response.data.message) {
+        alert(`❌ ${err.response.data.message}`);
+      } else {
+        alert('🚨 서버와 연결할 수 없습니다.');
+      }
+      console.error(err.response ? err.response.data : err);
     }
   };
 

@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import API from '../api/axiosConfig';
+import '../App.css';
 
 const VoteDetailQuery = () => {
   const [topic, setTopic] = useState('');
-  const [detail, setDetail] = useState(null);
-  const [rawResponse, setRawResponse] = useState(null);
+  const [proposal, setProposal] = useState(null);
   const [error, setError] = useState('');
+  const [showJson, setShowJson] = useState(false);
 
   const handleSearch = async () => {
     setError('');
-    setDetail(null);
-    setRawResponse(null);
+    setProposal(null);
+    setShowJson(false);
 
     try {
-      const res = await API.get(`/api/v1/query/proposal/${topic}/detail`, { params: { topic } });
-      setRawResponse(res.data);
+      const res = await API.get(`/api/v1/query/proposal/${topic}/detail`);
 
       if (res.data.success) {
-        setDetail(res.data.poll);
+        setProposal(res.data.proposal);
       } else {
         setError('상세 조회 실패');
       }
@@ -37,30 +37,34 @@ const VoteDetailQuery = () => {
       />
       <button onClick={handleSearch}>검색</button>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <div className="error-message">{error}</div>}
 
-      {detail && (
-        <div>
-          <h3>{detail.topic}</h3>
-          <p>투표 기간: {detail.duration}분</p>
-          <p>옵션: {detail.options.join(', ')}</p>
-          <p>중복 투표 허용: {detail.multiple === 0 ? '불허' : detail.multiple}</p>
-        </div>
-      )}
+      {proposal && (
+        <div
+          className="vote-detail-card"
+          onClick={() => setShowJson(prev => !prev)} // 카드 클릭 시 JSON 표시 토글
+          style={{ cursor: 'pointer' }}
+        >
+          <h3>{proposal.topic}</h3>
+          <p>투표 기간: {proposal.duration}분</p>
+          <p>마감 여부: {proposal.expired ? '종료됨' : '진행 중'}</p>
+          <p>생성일: {new Date(proposal.created_at).toLocaleString()}</p>
+          <p>마감일: {new Date(proposal.expired_at).toLocaleString()}</p>
+          <div className="vote-options">
+            {proposal.options.map((opt, idx) => (
+              <div key={idx} className="vote-option">
+                {opt} ({proposal.result.options[opt] || 0})
+              </div>
+            ))}
+          </div>
+          <p>총 투표 수: {proposal.result.count}</p>
 
-      {rawResponse && (
-        <div style={{ marginTop: '20px' }}>
-          <h3>응답 원본 데이터</h3>
-          <pre
-            style={{
-              backgroundColor: '#f4f4f4',
-              padding: '10px',
-              borderRadius: '4px',
-              overflowX: 'auto',
-            }}
-          >
-            {JSON.stringify(rawResponse, null, 2)}
-          </pre>
+          {showJson && (
+            <div className="raw-response" style={{ marginTop: '16px' }}>
+              <h4>원본 JSON 데이터</h4>
+              <pre>{JSON.stringify(proposal, null, 2)}</pre>
+            </div>
+          )}
         </div>
       )}
     </div>
