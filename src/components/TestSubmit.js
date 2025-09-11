@@ -1,33 +1,51 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import API from '../api/axiosConfig';
+import '../App.css';
 
 const TestSubmit = () => {
-  const [topic, setTopic] = useState('');
-  const [option, setOption] = useState('');
+  const [polls, setPolls] = useState([]);
+  const [selectedPoll, setSelectedPoll] = useState(null);
+  const [selectedOption, setSelectedOption] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    API.get('/api/v1/query/proposal/list', { params: { expired: false } })
+      .then(res => {
+        if (res.data.success) {
+          setPolls(res.data.proposal_list || []);
+        } else {
+          setError('투표 목록을 불러올 수 없습니다.');
+        }
+      })
+      .catch(() => setError('서버 연결 실패'));
+  }, []);
+
+  const loadPoll = (topic) => {
+    API.get(`/v1/vote/detail/${topic}`)
+      .then(res => {
+        console.log("📄 투표 상세 응답:", res.data);
+        if (res.data.success) {
+          setSelectedPoll(res.data.poll);
+          setSelectedOption('');
+        } else {
+          setError('투표 정보를 불러올 수 없습니다.');
+        }
+      })
+      .catch(() => setError('서버 연결 실패'));
+  };
 
   const handleSubmit = async () => {
     setResult(null);
     setError('');
 
     const submitVote = async () => {
-      const accessToken = localStorage.getItem('accessToken');
-      const userHash = localStorage.getItem('userHash');
-
-      const res = await axios.post(
-        `/api/v1/vote/submit`,
-        { topic, option },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'X-User-Hash': userHash,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const res = await API.post('/v1/vote/submit', {
+        proposalId: selectedPoll.id,
+        options: [selectedOption],
+      });
 
       const data = res.data;
       console.log("📦 전체 응답:", res);
@@ -47,8 +65,7 @@ const TestSubmit = () => {
       if (data.success === true || data.success === "true") {
         setResult("✅ 투표 제출 성공!");
         setError('');
-      } 
-      else {
+      } else {
         const serverMessage = data.message || "알 수 없는 오류 발생";
         switch (data.status) {
           case "UNAUTHORIZED":
@@ -79,41 +96,65 @@ const TestSubmit = () => {
 
       if (err.response?.data?.message) {
         setError(`❌ ${err.response.data.message}`);
-      } 
-      else if (err.response?.data?.status === "UNAUTHORIZED") {
+      } else if (err.response?.data?.status === "UNAUTHORIZED") {
         setError("⚠️ 로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userHash");
         setTimeout(() => navigate('/login'), 1500);
-      } 
-      else {
+      } else {
         setError("🚨 서버 연결 또는 요청 중 오류가 발생했습니다.");
       }
     }
   };
 
+  if (error) return <div>{error}</div>;
+
   return (
     <div className="proposal-form">
-      <h2>투표 제출</h2>
+      <h2>투표 참여</h2>
 
-      <input
-        type="text"
-        placeholder="투표 제목 (topic)"
-        value={topic}
-        onChange={(e) => setTopic(e.target.value)}
-        style={{ width: '100%', marginBottom: '10px' }}
-      />
-      <input
-        type="text"
-        placeholder="선택한 옵션 (option)"
-        value={option}
-        onChange={(e) => setOption(e.target.value)}
-        style={{ width: '100%', marginBottom: '10px' }}
-      />
-      <button onClick={handleSubmit}>제출</button>
+      {!selectedPoll ? (
+        <>
+          <h3>진행 중인 투표 목록</h3>
+          {polls.length === 0 ? (
+            <p>진행 중인 투표가 없습니다.</p>
+          ) : (
+            <ul className="vote-list">
+              {polls.map((poll, idx) => (
+                <li
+                  key={idx}
+                  className="vote-list-item"
+                  onClick={() => loadPoll(poll.topic)}
+                >
+                  {poll.topic}
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      ) : (
+        <>
+          <h3>{selectedPoll.topic}</h3>
+          <div className="vote-options">
+            {selectedPoll.options?.map((opt, idx) => (
+              <label key={idx} className="vote-option">
+                <input
+                  type="radio"
+                  name="voteOption"
+                  value={opt}
+                  checked={selectedOption === opt}
+                  onChange={(e) => setSelectedOption(e.target.value)}
+                />
+                {opt}
+              </label>
+            ))}
+          </div>
+          <button onClick={handleSubmit}>제출</button>
+        </>
+      )}
 
-      {result && <p style={{ color: 'green', marginTop: '10px' }}>{result}</p>}
-      {error && <p style={{ color: 'red', marginTop: '10px', whiteSpace: 'pre-wrap' }}>{error}</p>}
+      {result && <p className="success-msg">{result}</p>}
+      {error && <p className="error-msg">{error}</p>}
     </div>
   );
 };

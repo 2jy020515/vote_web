@@ -22,7 +22,7 @@ const Login = () => {
     }
 
     try {
-      const res = await API.post('/api/v1/user/login', form);
+      const res = await API.post('/v1/user/login', form);
 
       if (res.data.success) {
         let accessToken = res.headers['authorization'];
@@ -34,6 +34,13 @@ const Login = () => {
 
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('userHash', userHash);
+        localStorage.setItem('username', form.username);
+
+        // ✅ 서버 응답 키 이름 상관없이 realName 저장
+        const realName = res.data.real_name || res.data.realName || '';
+        if (realName) {
+          localStorage.setItem('realName', realName);
+        }
 
         alert('✅ 로그인 성공');
         navigate('/');
@@ -47,8 +54,7 @@ const Login = () => {
       }
     } catch (err) {
       console.error('로그인 오류:', err);
-
-      if (err.response && err.response.data && err.response.data.message) {
+      if (err.response?.data?.message) {
         setError(`❌ ${err.response.data.message}`);
       } else {
         setError('🚨 서버 연결 오류');

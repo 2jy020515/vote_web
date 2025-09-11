@@ -22,6 +22,7 @@ function App() {
 
 const AppContent = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -33,47 +34,52 @@ const AppContent = () => {
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('userHash');
+    localStorage.removeItem('username');
+    localStorage.removeItem('realName');
     setIsLoggedIn(false);
     alert('✅ 로그아웃 되었습니다.');
     navigate('/login');
   };
+
+  const copyHash = () => {
+    const userHash = localStorage.getItem('userHash');
+    if (userHash) {
+      navigator.clipboard.writeText(userHash);
+      alert('✅ 유저 해시가 복사되었습니다.');
+    }
+  };
+
+  const username = localStorage.getItem('username');
+  const realName = localStorage.getItem('realName');
+  const userHash = localStorage.getItem('userHash');
 
   return (
     <div className="app-container">
       <header className="navbar">
         <h1 className="logo">✓OTING</h1>
         <nav>
-  <NavLink to="/" end className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-    투표생성
-  </NavLink>
-
-  {/* 
-  <NavLink to="/result" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-    투표결과
-  </NavLink>
-  */}
-
-  <NavLink to="/list" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-    투표목록
-  </NavLink>
-  
-  <NavLink to="/test-submit" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-    투표행사
-  </NavLink>
-  <NavLink to="/vote-list-query" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-    목록조회
-  </NavLink>
-  <NavLink to="/vote-detail-query" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-    상세조회
-  </NavLink>
-  <NavLink to="/ballot-query" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-    해시조회
-  </NavLink>
-  <NavLink to="/block-explorer" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-    블록조회
-  </NavLink>
-</nav>
-
+          <NavLink to="/" end className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            투표생성
+          </NavLink>
+          <NavLink to="/list" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            투표목록
+          </NavLink>
+          <NavLink to="/test-submit" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            투표행사
+          </NavLink>
+          <NavLink to="/vote-list-query" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            목록조회
+          </NavLink>
+          <NavLink to="/vote-detail-query" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            상세조회
+          </NavLink>
+          <NavLink to="/ballot-query" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            해시조회
+          </NavLink>
+          <NavLink to="/block-explorer" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            블록조회
+          </NavLink>
+        </nav>
 
         <div className="auth-buttons">
           {!isLoggedIn ? (
@@ -86,14 +92,32 @@ const AppContent = () => {
               </NavLink>
             </>
           ) : (
-            <button className="login" onClick={handleLogout}>LOGOUT</button>
+            <div className="user-section">
+              {username && (
+                <div className="user-info">
+                  <span onClick={() => setShowInfo(!showInfo)} className="username">
+                    {username}
+                  </span>
+                  {showInfo && (
+                    <div className="user-dropdown">
+                      <p><strong>이름:</strong> {realName || "알 수 없음"}</p>
+                      <p>
+                        <strong>유저해시:</strong>
+                        <span className="user-hash">{userHash}</span>
+                        <button className="copy-btn" onClick={copyHash}>복사</button>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+              <button className="login" onClick={handleLogout}>LOGOUT</button>
+            </div>
           )}
         </div>
       </header>
 
       <main>
         <Routes>
-          {/* 로그인 필요 페이지들 */}
           <Route path="/" element={<ProtectedRoute><Proposal /></ProtectedRoute>} />
           <Route path="/submit/:id" element={<ProtectedRoute><Submit /></ProtectedRoute>} />
           <Route path="/list" element={<ProtectedRoute><List /></ProtectedRoute>} />
@@ -102,8 +126,6 @@ const AppContent = () => {
           <Route path="/vote-detail-query" element={<ProtectedRoute><VoteDetailQuery /></ProtectedRoute>} />
           <Route path="/ballot-query" element={<ProtectedRoute><VoteBallotQuery /></ProtectedRoute>} />
           <Route path="/block-explorer" element={<ProtectedRoute><BlockExplorer /></ProtectedRoute>} />
-
-          {/* 로그인/회원가입은 예외 */}
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
         </Routes>
