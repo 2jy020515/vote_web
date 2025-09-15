@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import API from '../api/axiosConfig';
 import '../App.css';
 
 const VoteListQuery = () => {
@@ -40,7 +40,7 @@ const VoteListQuery = () => {
     }
 
     try {
-      const res = await axios.get(`/api/v1/query/proposal/list`, {
+      const res = await API.get(`/api/v1/query/proposal/list`, {
         params: form,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -52,7 +52,7 @@ const VoteListQuery = () => {
         const newToken = res.data.access_token;
         localStorage.setItem('accessToken', newToken);
 
-        const retryRes = await axios.get(`/api/v1/query/proposal/list`, {
+        const retryRes = await API.get(`/api/v1/query/proposal/list`, {
           params: form,
           headers: {
             Authorization: `Bearer ${newToken}`,

@@ -24,7 +24,7 @@ const TestSubmit = () => {
   }, []);
 
   const loadPoll = (topic) => {
-    API.get(`/v1/vote/detail/${topic}`)
+    API.get(`/api/v1/vote/detail/${topic}`)
       .then(res => {
         console.log("📄 투표 상세 응답:", res.data);
         if (res.data.success) {
@@ -42,7 +42,7 @@ const TestSubmit = () => {
     setError('');
 
     const submitVote = async () => {
-      const res = await API.post('/v1/vote/submit', {
+      const res = await API.post('/api/v1/vote/submit', {
         proposalId: selectedPoll.id,
         options: [selectedOption],
       });
