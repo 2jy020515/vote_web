@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { sha256 } from 'js-sha256';
-import axios from 'axios';
 import API from '../api/axiosConfig';
+import explorerAPI from '../api/axiosExplorerConfig';
 import './BlockExplorer.css';
 
 const BlockExplorer = () => {
@@ -65,7 +65,7 @@ const BlockExplorer = () => {
     setShowJson(false);
 
     try {
-      const res = await axios.get(`http://l4.ai-capstone.store/block/query?height=${height}`);
+      const res = await explorerAPI.get(`/explorer/block?height=${height}`);
       setSelectedBlock(res.data);
     } catch (e) {
       setError('블록 조회 중 오류가 발생했습니다.');

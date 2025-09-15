@@ -22,7 +22,7 @@ const Login = () => {
     }
 
     try {
-      const res = await API.post('/v1/user/login', form);
+      const res = await API.post('/api/v1/user/login', form);
 
       if (res.data.success) {
         let accessToken = res.headers['authorization'];

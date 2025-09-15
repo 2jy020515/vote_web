@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import '../App.css';
+import API from '../api/axiosConfig';
 
 const SignUp = () => {
   const [form, setForm] = useState({
@@ -49,7 +49,7 @@ const SignUp = () => {
     }
 
     try {
-      const res = await axios.post(`/api/v1/user/register`, form);
+      const res = await API.post(`/api/v1/user/register`, form);
 
       if (res.data.success) {
         alert('✅ 회원가입 성공');
