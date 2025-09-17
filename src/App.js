@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route, NavLink, useNavigate, useLocation } from 
 import Proposal from './components/Proposal';
 import Submit from './components/Submit';
 import List from './components/List';
-import TestSubmit from './components/TestSubmit';
 import VoteListQuery from './components/VoteListQuery';
 import VoteDetailQuery from './components/VoteDetailQuery';
 import VoteBallotQuery from './components/VoteBallotQuery';
@@ -59,25 +58,22 @@ const AppContent = () => {
         <h1 className="logo">✓OTING</h1>
         <nav>
           <NavLink to="/" end className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            투표생성
+            투표 생성
           </NavLink>
           <NavLink to="/list" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            투표목록
-          </NavLink>
-          <NavLink to="/test-submit" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            투표행사
+            투표 목록
           </NavLink>
           <NavLink to="/vote-list-query" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            목록조회
+            목록 조회
           </NavLink>
           <NavLink to="/vote-detail-query" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            상세조회
+            상세 조회
           </NavLink>
           <NavLink to="/ballot-query" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            해시조회
+            해시 조회
           </NavLink>
           <NavLink to="/block-explorer" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            블록조회
+            블록 조회
           </NavLink>
         </nav>
 
@@ -121,7 +117,6 @@ const AppContent = () => {
           <Route path="/" element={<ProtectedRoute><Proposal /></ProtectedRoute>} />
           <Route path="/submit/:id" element={<ProtectedRoute><Submit /></ProtectedRoute>} />
           <Route path="/list" element={<ProtectedRoute><List /></ProtectedRoute>} />
-          <Route path="/test-submit" element={<ProtectedRoute><TestSubmit /></ProtectedRoute>} />
           <Route path="/vote-list-query" element={<ProtectedRoute><VoteListQuery /></ProtectedRoute>} />
           <Route path="/vote-detail-query" element={<ProtectedRoute><VoteDetailQuery /></ProtectedRoute>} />
           <Route path="/ballot-query" element={<ProtectedRoute><VoteBallotQuery /></ProtectedRoute>} />

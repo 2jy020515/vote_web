@@ -20,7 +20,7 @@ const VoteBallotQuery = () => {
     }
 
     try {
-      const res = await API.get(`/api/v1/query/${hash}/votes`);
+      const res = await API.get(`/api/v1/query/${userHash}/votes`);
       if (res.data.success) {
         setBallots(res.data.ballot_list || []);
       } else {
