@@ -51,14 +51,11 @@ const Submit = () => {
       });
 
       const data = res.data;
-      console.log("📦 전체 응답:", res);
-      console.log("📄 응답 바디:", data);
 
       if (data.status === "REFRESHED_TOKEN") {
         const newAccessToken = res.headers['authorization']?.split(' ')[1];
         if (newAccessToken) {
           localStorage.setItem("accessToken", newAccessToken);
-          console.log("♻️ 새 토큰 저장 완료, 재요청 중...");
           return await submitVote();
         } else {
           throw new Error("새로운 액세스 토큰을 찾을 수 없습니다.");
@@ -116,18 +113,21 @@ const Submit = () => {
   return (
     <div className="proposal-form">
       <h2>{poll.topic}</h2>
-      <div className="options-container">
+
+      <div className="submit-options-container">
         {poll.options.map((opt, idx) => (
           <div
             key={idx}
-            className={`option-box ${selected === idx ? 'selected' : ''}`}
+            className={`submit-option-box ${selected === idx ? 'selected' : ''}`}
             onClick={() => handleSelect(idx)}
           >
             {opt}
           </div>
         ))}
       </div>
+
       <button className="submit-btn" onClick={handleSubmit}>투표 제출</button>
+
       {result && <p className="success-message">{result}</p>}
       {error && <p className="error-message">{error}</p>}
     </div>
