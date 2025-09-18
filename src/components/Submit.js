@@ -39,7 +39,7 @@ const Submit = () => {
 
     const submitVote = async () => {
       const payload = {
-        proposal_topic: poll.topic,
+        topic: poll.topic,
         option: poll.options[selected],
       };
 
@@ -65,7 +65,6 @@ const Submit = () => {
       if (data.success === true || data.success === "true") {
         setResult("✅ 투표 제출 성공!");
         setError('');
-        setTimeout(() => navigate('/'), 1500);
       } else {
         const serverMessage = data.message || "알 수 없는 오류 발생";
         switch (data.status) {
@@ -107,7 +106,6 @@ const Submit = () => {
     }
   };
 
-  if (error) return <div>{error}</div>;
   if (!poll) return <div>불러오는 중...</div>;
 
   return (
@@ -130,6 +128,14 @@ const Submit = () => {
 
       {result && <p className="success-message">{result}</p>}
       {error && <p className="error-message">{error}</p>}
+      {(result || error) && (
+        <button 
+          className="back-btn" 
+          onClick={() => navigate('/list')}
+        >
+          목록으로 돌아가기
+        </button>
+      )}
     </div>
   );
 };
