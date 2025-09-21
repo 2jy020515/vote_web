@@ -27,6 +27,8 @@ const Login = () => {
       if (res.data.success) {
         let accessToken = res.headers['authorization'];
         const userHash = res.data.user_hash;
+        const uid = res.data.uid;
+        const username = res.data.user_name;
 
         if (accessToken && accessToken.startsWith('Bearer ')) {
           accessToken = accessToken.substring(7);
@@ -34,13 +36,12 @@ const Login = () => {
 
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('userHash', userHash);
-        localStorage.setItem('username', form.username);
+        localStorage.setItem('uid', uid);
+        localStorage.setItem('username', username);
 
-        // ✅ 서버 응답 키 이름 상관없이 realName 저장
-        const realName = res.data.real_name || res.data.realName || '';
-        if (realName) {
-          localStorage.setItem('realName', realName);
-        }
+        console.log("✅ uid 저장 확인:", uid);
+        console.log("✅ localStorage uid:", localStorage.getItem("uid"));
+
 
         alert('✅ 로그인 성공');
         navigate('/');

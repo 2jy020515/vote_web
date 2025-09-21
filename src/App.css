@@ -609,8 +609,82 @@ main {
   font-size: 15px;
   cursor: pointer;
   transition: background 0.2s;
+
+  position: relative;
+  top: -7px;
 }
 
 .back-btn:hover {
   background-color: #000;
+}
+.options-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 100px 1fr;
+  gap: 10px 16px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.options-row label {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.options-row input {
+  width: 100%;
+  height: 40px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+}
+.info-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.info-row label {
+  width: 100px;
+  font-weight: 600;
+}
+
+.info-row input {
+  flex: 1;
+  height: 40px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-left: 10px;
+  position: relative;
+  top: 7px;
+}
+
+.hash-box {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.hash-box input {
+  flex: 1;
+  margin-right: 10px;
+  height: 40px;
+  position: relative;
+  top: 7px;
+}
+
+.copy-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: black;
+  color: white;
+  cursor: pointer;
+  position: relative;
+  top: -10px;
+}
+
+.copy-btn:hover {
+  background-color: #333;
 }

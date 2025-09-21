@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../App.css';
 import API from '../api/axiosConfig';
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const [form, setForm] = useState({
@@ -11,6 +12,8 @@ const SignUp = () => {
     email: '',
     phone_number: ''
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,6 +56,7 @@ const SignUp = () => {
 
       if (res.data.success) {
         alert('✅ 회원가입 성공');
+        navigate("/login");
       } else {
         alert(res.data.message || '회원가입 실패');
       }

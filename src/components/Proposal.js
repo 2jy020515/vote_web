@@ -7,7 +7,7 @@ const Proposal = () => {
   const [topic, setTopic] = useState('');
   const [duration, setDuration] = useState('');
   const [options, setOptions] = useState(['찬성', '반대']);
-  const [multiple, setMultiple] = useState(0);
+  // const [multiple, setMultiple] = useState(0);
 
   const handleVoteTypeChange = (type) => {
     setVoteType(type);
@@ -49,12 +49,11 @@ const Proposal = () => {
         setTopic('');
         setDuration('');
         setOptions(voteType === '찬반' ? ['찬성', '반대'] : ['', '']);
-        setMultiple(0);
+        // setMultiple(0);
       } else {
         alert(res.data.message || '❌ 서버 오류가 발생했습니다.');
       }
     } catch (err) {
-      // 서버 응답 메시지 확인
       if (err.response && err.response.data && err.response.data.message) {
         alert(`❌ ${err.response.data.message}`);
       } else {
@@ -131,6 +130,7 @@ const Proposal = () => {
             안건 추가
           </button>
 
+          {/*
           <label>중복 투표 허용</label>
           <select
             value={multiple}
@@ -141,6 +141,7 @@ const Proposal = () => {
               <option key={v} value={v}>{v}</option>
             ))}
           </select>
+          */}
         </>
       )}
 

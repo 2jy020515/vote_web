@@ -17,4 +17,16 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 403 || error.response?.status === 401) {
+      alert("⏰ 세션이 만료되었습니다. 다시 로그인 해주세요.");
+      localStorage.clear();
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default API;

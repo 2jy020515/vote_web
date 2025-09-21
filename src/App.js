@@ -10,6 +10,7 @@ import SignUp from './components/SignUp';
 import Login from './components/Login';
 import BlockExplorer from './components/BlockExplorer';
 import ProtectedRoute from './components/ProtectedRoute';
+import MyPage from './components/MyPage';   // ✅ 마이페이지 추가
 
 function App() {
   return (
@@ -21,7 +22,6 @@ function App() {
 
 const AppContent = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showInfo, setShowInfo] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -35,22 +35,13 @@ const AppContent = () => {
     localStorage.removeItem('userHash');
     localStorage.removeItem('username');
     localStorage.removeItem('realName');
+    localStorage.removeItem('uid');
     setIsLoggedIn(false);
     alert('✅ 로그아웃 되었습니다.');
     navigate('/login');
   };
 
-  const copyHash = () => {
-    const userHash = localStorage.getItem('userHash');
-    if (userHash) {
-      navigator.clipboard.writeText(userHash);
-      alert('✅ 유저 해시가 복사되었습니다.');
-    }
-  };
-
   const username = localStorage.getItem('username');
-  const realName = localStorage.getItem('realName');
-  const userHash = localStorage.getItem('userHash');
 
   return (
     <div className="app-container">
@@ -91,19 +82,10 @@ const AppContent = () => {
             <div className="user-section">
               {username && (
                 <div className="user-info">
-                  <span onClick={() => setShowInfo(!showInfo)} className="username">
+                  {/* ✅ username 클릭 시 마이페이지로 이동 */}
+                  <span onClick={() => navigate('/mypage')} className="username">
                     {username}
                   </span>
-                  {showInfo && (
-                    <div className="user-dropdown">
-                      <p><strong>이름:</strong> {realName || "알 수 없음"}</p>
-                      <p>
-                        <strong>유저해시:</strong>
-                        <span className="user-hash">{userHash}</span>
-                        <button className="copy-btn" onClick={copyHash}>복사</button>
-                      </p>
-                    </div>
-                  )}
                 </div>
               )}
               <button className="login" onClick={handleLogout}>LOGOUT</button>
@@ -121,6 +103,7 @@ const AppContent = () => {
           <Route path="/vote-detail-query" element={<ProtectedRoute><VoteDetailQuery /></ProtectedRoute>} />
           <Route path="/ballot-query" element={<ProtectedRoute><VoteBallotQuery /></ProtectedRoute>} />
           <Route path="/block-explorer" element={<ProtectedRoute><BlockExplorer /></ProtectedRoute>} />
+          <Route path="/mypage" element={<ProtectedRoute><MyPage /></ProtectedRoute>} /> {/* ✅ 마이페이지 라우트 */}
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
         </Routes>
