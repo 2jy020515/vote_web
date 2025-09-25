@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { sha256 } from 'js-sha256';
 import API from '../api/axiosConfig';
 import explorerAPI from '../api/axiosExplorerConfig';
-import './BlockExplorer.css';
+import '../App.css';
 
-const BlockExplorer = () => {
+const BallotValidation = () => {
   const [userHash, setUserHash] = useState('');
   const [topic, setTopic] = useState('');
   const [option, setOption] = useState('');
@@ -74,7 +74,7 @@ const BlockExplorer = () => {
 
   return (
     <div className="proposal-form block-explorer-container">
-      <h2>블록 조회</h2>
+      <h2>투표지 검증</h2>
 
       <div style={{ marginBottom: 20 }}>
         <input
@@ -187,4 +187,4 @@ const BlockExplorer = () => {
   );
 };
 
-export default BlockExplorer;
+export default BallotValidation;

@@ -39,24 +39,28 @@ const Login = () => {
         localStorage.setItem('uid', uid);
         localStorage.setItem('username', username);
 
-        console.log("✅ uid 저장 확인:", uid);
-        console.log("✅ localStorage uid:", localStorage.getItem("uid"));
-
-
         alert('✅ 로그인 성공');
         navigate('/');
         return;
       }
 
-      if (res.data.message) {
-        setError(`❌ ${res.data.message}`);
-      } else {
-        setError('❌ 로그인 실패');
-      }
+      setError(res.data.message || '❌ 로그인 실패');
+
     } catch (err) {
       console.error('로그인 오류:', err);
-      if (err.response?.data?.message) {
-        setError(`❌ ${err.response.data.message}`);
+
+      if (err.response) {
+        const { status, data } = err.response;
+
+        if (status === 401) {
+          setError(`❌ ${data?.message || '아이디 또는 비밀번호가 일치하지 않습니다.'}`);
+        } else if (status === 403) {
+          setError('🚨 세션이 만료되었거나 권한이 없습니다. 다시 로그인해주세요.');
+        } else if (data?.message) {
+          setError(`❌ ${data.message}`);
+        } else {
+          setError('❌ 알 수 없는 로그인 오류');
+        }
       } else {
         setError('🚨 서버 연결 오류');
       }
@@ -83,7 +87,7 @@ const Login = () => {
           className="auth-input"
         />
         <button type="submit">로그인</button>
-        {error && <p>{error}</p>}
+        {error && <p className="error-msg">{error}</p>}
       </form>
     </div>
   );

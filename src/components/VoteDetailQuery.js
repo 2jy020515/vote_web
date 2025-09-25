@@ -35,14 +35,14 @@ const VoteDetailQuery = () => {
         value={topic}
         onChange={e => setTopic(e.target.value)}
       />
-      <button onClick={handleSearch}>검색</button>
+      <button onClick={handleSearch}>조회</button>
 
       {error && <div className="error-message">{error}</div>}
 
       {proposal && (
         <div
           className="vote-detail-card"
-          onClick={() => setShowJson(prev => !prev)} // 카드 클릭 시 JSON 표시 토글
+          onClick={() => setShowJson(prev => !prev)}
           style={{ cursor: 'pointer' }}
         >
           <h3>{proposal.topic}</h3>

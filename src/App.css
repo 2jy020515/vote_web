@@ -365,7 +365,7 @@ main {
 }
 .vote-option-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 한 줄에 2개 */
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   margin-top: 12px;
 }
@@ -687,4 +687,115 @@ main {
 
 .copy-btn:hover {
   background-color: #333;
+}
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0px;
+  justify-content: center;
+  flex: 1;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: black;
+  font-weight: 500;
+  white-space: nowrap;
+  word-break: keep-all;
+  display: inline-block;
+  padding: 4px 6px;
+}
+
+.nav-links a.active {
+  font-weight: 800;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .nav-links {
+    justify-content: center;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-links {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+.proposal-form .add-option-btn {
+  background-color: #e0e0e0 !important;
+  color: #333;
+  border: none;
+}
+
+.proposal-form .add-option-btn:hover {
+  background-color: #d5d5d5 !important;
+}
+.block-explorer-container {
+  width: 100%;
+  max-width: 600px;
+  background: #f9f9f9;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.radio-group {
+  display: flex;
+  gap: 20px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.block-result table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.block-result th,
+.block-result td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+}
+
+.error-box {
+  color: red;
+  margin-top: 10px;
+}
+
+.block-result table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.block-result th, .block-result td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  vertical-align: top;
+  word-break: break-all;
+  white-space: normal;
+  text-align: left;
+}
+
+.block-result th {
+  background-color: #f2f2f2;
+}
+.proposal-form .form-group {
+  margin-top: 10px; /* 원하는 만큼 띄우기 */
 }

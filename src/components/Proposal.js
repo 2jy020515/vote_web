@@ -5,9 +5,8 @@ import '../App.css';
 const Proposal = () => {
   const [voteType, setVoteType] = useState('찬반');
   const [topic, setTopic] = useState('');
-  const [duration, setDuration] = useState('');
+  const [deadline, setDeadline] = useState(''); // 마감 기한 (날짜+시간)
   const [options, setOptions] = useState(['찬성', '반대']);
-  // const [multiple, setMultiple] = useState(0);
 
   const handleVoteTypeChange = (type) => {
     setVoteType(type);
@@ -29,16 +28,26 @@ const Proposal = () => {
 
   const handleSubmit = async () => {
     const trimmedOptions = options.map(opt => opt.trim()).filter(opt => opt !== '');
-    if (!topic || !duration || trimmedOptions.length < 2) {
+    if (!topic || !deadline || trimmedOptions.length < 2) {
       alert('모든 필드를 입력해주세요.');
       return;
     }
 
+    const now = new Date();
+    const endTime = new Date(deadline);
+    const diffMs = endTime - now;
+
+    if (diffMs <= 0) {
+      alert('❌ 마감 기한은 현재 시간 이후여야 합니다.');
+      return;
+    }
+
+    const durationMinutes = Math.floor(diffMs / 1000 / 60);
+
     const payload = {
       topic,
-      duration: Number(duration),
+      duration: durationMinutes,
       options: trimmedOptions,
-      // multiple,
     };
 
     try {
@@ -47,14 +56,13 @@ const Proposal = () => {
       if (res.data.success) {
         alert('✅ 투표가 정상적으로 생성되었습니다!');
         setTopic('');
-        setDuration('');
+        setDeadline('');
         setOptions(voteType === '찬반' ? ['찬성', '반대'] : ['', '']);
-        // setMultiple(0);
       } else {
         alert(res.data.message || '❌ 서버 오류가 발생했습니다.');
       }
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.message) {
+      if (err.response?.data?.message) {
         alert(`❌ ${err.response.data.message}`);
       } else {
         alert('🚨 서버와 연결할 수 없습니다.');
@@ -93,13 +101,11 @@ const Proposal = () => {
         onChange={(e) => setTopic(e.target.value)}
       />
 
-      <label>투표 기간 (분)</label>
+      <label>마감 기한</label>
       <input
-        type="number"
-        placeholder="예: 30"
-        value={duration}
-        onChange={(e) => setDuration(e.target.value)}
-        min={1}
+        type="datetime-local"
+        value={deadline}
+        onChange={(e) => setDeadline(e.target.value)}
       />
 
       {voteType === '안건' && (
@@ -126,26 +132,15 @@ const Proposal = () => {
               </div>
             ))}
           </div>
-          <button type="button" onClick={addOption}>
+
+          {/* 기존 버튼 유지하되 클래스 추가해서 색만 바꿈 */}
+          <button type="button" className="add-option-btn" onClick={addOption}>
             안건 추가
           </button>
-
-          {/*
-          <label>중복 투표 허용</label>
-          <select
-            value={multiple}
-            onChange={(e) => setMultiple(Number(e.target.value))}
-          >
-            <option value={0}>불허</option>
-            {Array.from({ length: options.length - 2 }, (_, i) => i + 2).map(v => (
-              <option key={v} value={v}>{v}</option>
-            ))}
-          </select>
-          */}
         </>
       )}
 
-      <button type="button" onClick={handleSubmit}>투표 생성</button>
+      <button type="button" className="submit-btn" onClick={handleSubmit}>투표 생성</button>
     </div>
   );
 };

@@ -3,7 +3,7 @@ import API from '../api/axiosConfig';
 import { useNavigate } from 'react-router-dom';
 import '../App.css';
 
-const PollList = () => {
+const List = () => {
   const [polls, setPolls] = useState([]);
   const [error, setError] = useState('');
   const [tab, setTab] = useState('active');
@@ -140,4 +140,4 @@ const PollList = () => {
   );
 };
 
-export default PollList;
+export default List;

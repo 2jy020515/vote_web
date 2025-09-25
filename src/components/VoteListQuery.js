@@ -13,7 +13,7 @@ const VoteListQuery = () => {
   });
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
-  const [selectedVote, setSelectedVote] = useState(null); // 클릭한 투표 JSON 상태
+  const [selectedVote, setSelectedVote] = useState(null);
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
@@ -111,9 +111,10 @@ const VoteListQuery = () => {
       <label>페이지</label>
       <input type="number" name="page" value={form.page} onChange={handleChange} />
 
+      <div className="form-group">
       <label>한 페이지당 개수</label>
       <input type="number" name="limit" value={form.limit} onChange={handleChange} />
-
+      </div>
       <button onClick={fetchVotes}>목록 조회</button>
 
       {error && <div className="error-message" style={{ color: 'red', marginTop: '10px' }}>{error.message}</div>}

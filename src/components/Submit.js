@@ -27,7 +27,7 @@ const Submit = () => {
   }, [topic]);
 
   const handleSelect = (idx) => {
-    setSelected(idx); // 단일 선택
+    setSelected(idx);
   };
 
   const handleSubmit = async () => {
