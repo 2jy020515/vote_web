@@ -66,7 +66,7 @@ const AppContent = () => {
           <NavLink to="/ballot-validation" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
             <span>투표 검증</span>
           </NavLink>
-          <NavLink to="/block-explorer" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+          <NavLink to="https://explorer.jw-capstone.store/" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
             <span>블록 조회</span>
           </NavLink>
         </nav>
