@@ -11,6 +11,7 @@ import Login from './components/Login';
 import BallotValidation from './components/BallotValidation';
 import ProtectedRoute from './components/ProtectedRoute';
 import MyPage from './components/MyPage';
+import API from './api/axiosConfig';
 
 function App() {
   return (
@@ -30,15 +31,36 @@ const AppContent = () => {
     setIsLoggedIn(!!token);
   }, [location]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('userHash');
-    localStorage.removeItem('username');
-    localStorage.removeItem('realName');
-    localStorage.removeItem('uid');
-    setIsLoggedIn(false);
-    alert('✅ 로그아웃 되었습니다.');
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      const userHash = localStorage.getItem('userHash');
+
+      await API.post(
+        '/api/v1/user/logout',
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'X-User-Hash': userHash,
+          },
+        }
+      );
+
+      alert('✅ 로그아웃 되었습니다.');
+    } catch (err) {
+      console.error('❌ 로그아웃 요청 실패:', err.response?.data || err);
+      alert('⚠️ 서버 로그아웃 요청 실패 (토큰이 만료되었을 수 있음)');
+    } finally {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('userHash');
+      localStorage.removeItem('username');
+      localStorage.removeItem('realName');
+      localStorage.removeItem('uid');
+
+      setIsLoggedIn(false);
+      navigate('/login');
+    }
   };
 
   const username = localStorage.getItem('username');
@@ -66,9 +88,9 @@ const AppContent = () => {
           <NavLink to="/ballot-validation" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
             <span>투표 검증</span>
           </NavLink>
-          <NavLink to="/block-explorer" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+          <a href="http://explorer.ai-capstone.store:8081" className="nav-link" target="_blank" rel="noopener noreferrer">
             <span>블록 조회</span>
-          </NavLink>
+          </a>
         </nav>
 
         <div className="auth-buttons">
@@ -85,7 +107,6 @@ const AppContent = () => {
             <div className="user-section">
               {username && (
                 <div className="user-info">
-                  {/* ✅ username 클릭 시 마이페이지로 이동 */}
                   <span onClick={() => navigate('/mypage')} className="username">
                     {username}
                   </span>
@@ -106,7 +127,7 @@ const AppContent = () => {
           <Route path="/vote-detail-query" element={<ProtectedRoute><VoteDetailQuery /></ProtectedRoute>} />
           <Route path="/ballot-query" element={<ProtectedRoute><VoteBallotQuery /></ProtectedRoute>} />
           <Route path="/ballot-validation" element={<ProtectedRoute><BallotValidation /></ProtectedRoute>} />
-          <Route path="/mypage" element={<ProtectedRoute><MyPage /></ProtectedRoute>} /> {/* ✅ 마이페이지 라우트 */}
+          <Route path="/mypage" element={<ProtectedRoute><MyPage /></ProtectedRoute>} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
         </Routes>

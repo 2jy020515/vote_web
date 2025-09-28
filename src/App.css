@@ -797,5 +797,112 @@ main {
   background-color: #f2f2f2;
 }
 .proposal-form .form-group {
-  margin-top: 10px; /* 원하는 만큼 띄우기 */
+  margin-top: 10px;
+}
+.salt-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 16px;
+  margin-bottom: 10px;
+}
+
+.salt-title {
+  font-weight: 700;
+  font-size: 16px;
+  display: inline-block;
+}
+.tooltip-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.tooltip-btn {
+  all: unset !important;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.tooltip-btn {
+  color: #000 !important;
+}
+.tooltip-btn:hover {
+  color: #666 !important;
+}
+
+.tooltip-btn svg {
+  background: none !important;
+  fill: none !important;
+  stroke: currentColor !important;
+}
+.tooltip-content {
+  visibility: hidden;
+  opacity: 0;
+  width: 260px;
+  background-color: #333;
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 8px 10px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -130px;
+  font-size: 13px;
+  transition: opacity 0.3s;
+}
+
+.tooltip-container:hover .tooltip-content {
+  visibility: visible;
+  opacity: 1;
+}
+
+.salt-input {
+  width: 100%;
+  height: 40px;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.submit-btn {
+  width: 120px;
+  height: 40px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.submit-btn:hover {
+  background: #222;
+}
+
+.back-link {
+  margin-top: 10px;
+  background: none !important;
+  border: none !important;
+  color: #555 !important;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  float: right;
+  padding: 0;
+}
+
+.back-link:hover {
+  color: #000 !important;
+  text-decoration: underline;
 }

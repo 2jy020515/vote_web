@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import API from '../api/axiosConfig';
+import { sha256 } from 'js-sha256';
 import '../App.css';
 
 const Submit = () => {
   const { id: topic } = useParams();
   const [poll, setPoll] = useState(null);
   const [selected, setSelected] = useState(null);
+  const [salt, setSalt] = useState('');
   const [error, setError] = useState('');
   const [result, setResult] = useState('');
   const navigate = useNavigate();
@@ -36,17 +38,27 @@ const Submit = () => {
       setError("⚠️ 옵션을 선택하세요.");
       return;
     }
+    if (!salt) {
+      setError("⚠️ Salt를 입력하세요.");
+      return;
+    }
 
     const submitVote = async () => {
+      const userHash = localStorage.getItem("userHash");
+      const combined = `${userHash}|${poll.topic}|${poll.options[selected]}|${salt}`;
+      const ballotHash = sha256(combined);
+
       const payload = {
         topic: poll.topic,
         option: poll.options[selected],
+        salt: salt,
+        ballot_hash: ballotHash,
       };
 
       const res = await API.post('/api/v1/vote/submit', payload, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          "X-User-Hash": localStorage.getItem("userHash"),
+          "X-User-Hash": userHash,
         },
       });
 
@@ -111,7 +123,7 @@ const Submit = () => {
   return (
     <div className="proposal-form">
       <h2>{poll.topic}</h2>
-
+  
       <div className="submit-options-container">
         {poll.options.map((opt, idx) => (
           <div
@@ -123,21 +135,56 @@ const Submit = () => {
           </div>
         ))}
       </div>
+  
+      <div className="salt-label">
+  <span className="salt-title">SALT 입력칸 (필수)</span>
+  <div className="tooltip-container">
+    <button className="tooltip-btn" aria-label="Salt 설명">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        width="20"
+        height="20"
+        fill="none"
+        stroke="currentColor"
+      >
+        <circle cx="12" cy="12" r="10" strokeWidth="1.5" />
+        <line x1="12" y1="16" x2="12" y2="12" strokeWidth="1.5" />
+        <circle cx="12" cy="8" r="1" fill="currentColor" />
+      </svg>
+    </button>
 
+    <div className="tooltip-content">
+      <strong>Salt</strong>는 투표자의 해시를 더욱 안전하게 만들기 위해 사용하는
+      <strong> 추가 문자열</strong>입니다.<br/>
+      ⚠️ <em>입력한 Salt를 잊어버리면 이후 투표지 검증이 어려울 수 있으니 안전하게 보관하세요.</em>
+    </div>
+  </div>
+</div>
+
+  
+      <input
+        type="text"
+        className="salt-input"
+        placeholder="Salt를 입력하세요 (보안용)"
+        value={salt}
+        onChange={(e) => setSalt(e.target.value)}
+      />
+  
       <button className="submit-btn" onClick={handleSubmit}>투표 제출</button>
-
+  
       {result && <p className="success-message">{result}</p>}
       {error && <p className="error-message">{error}</p>}
-      {(result || error) && (
-        <button 
-          className="back-btn" 
-          onClick={() => navigate('/list')}
-        >
-          목록으로 돌아가기
-        </button>
-      )}
+  
+      <button
+        className="back-link"
+        onClick={() => navigate('/list')}
+      >
+        목록으로 돌아가기
+      </button>
     </div>
   );
+  
 };
 
 export default Submit;
