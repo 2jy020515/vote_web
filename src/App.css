@@ -906,3 +906,61 @@ main {
   color: #000 !important;
   text-decoration: underline;
 }
+.nav-link-tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.nav-link-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: 150%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 9999;
+}
+
+.nav-link-tooltip:hover::after {
+  opacity: 1;
+}
+
+.react-datepicker {
+  font-size: 13px;
+}
+.react-datepicker__header {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+.react-datepicker__navigation--previous::before,
+.react-datepicker__navigation--next::before {
+  border-color: #000 !important;
+}
+.react-datepicker__time-container .react-datepicker__header--time {
+  min-height: 61px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.react-datepicker__current-month {
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+.react-datepicker__day-name,
+.react-datepicker__day {
+  width: 28px;
+  line-height: 28px;
+  font-size: 12px;
+}
+.react-datepicker__time-list {
+  font-size: 12px;
+}

@@ -46,13 +46,12 @@ const Submit = () => {
     const submitVote = async () => {
       const userHash = localStorage.getItem("userHash");
       const combined = `${userHash}|${poll.topic}|${poll.options[selected]}|${salt}`;
-      const ballotHash = sha256(combined);
+      
 
       const payload = {
         topic: poll.topic,
         option: poll.options[selected],
         salt: salt,
-        ballot_hash: ballotHash,
       };
 
       const res = await API.post('/api/v1/vote/submit', payload, {

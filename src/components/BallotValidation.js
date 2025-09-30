@@ -8,6 +8,7 @@ const BallotValidation = () => {
   const [userHash, setUserHash] = useState('');
   const [topic, setTopic] = useState('');
   const [option, setOption] = useState('');
+  const [salt, setSalt] = useState('');           // ✅ salt 상태 추가
   const [ballotHash, setBallotHash] = useState('');
   const [proposalDetail, setProposalDetail] = useState(null);
   const [selectedBlock, setSelectedBlock] = useState(null);
@@ -16,17 +17,18 @@ const BallotValidation = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!userHash || !topic || !option) {
+    if (!userHash || !topic || !option || !salt) {
       setBallotHash('');
       return;
     }
-    const combined = `"${userHash}"|"${topic}"|"${option}"`;
+    // ✅ salt까지 포함하여 ballotHash 계산
+    const combined = `${userHash}|${topic}|${option}|${salt}`;
     setBallotHash(sha256(combined));
-  }, [userHash, topic, option]);
+  }, [userHash, topic, option, salt]);
 
   const fetchProposalDetail = async () => {
     if (!topic || !userHash || !option) {
-      setError('토픽, 유저 해시, 옵션을 모두 입력해주세요.');
+      setError('토픽, 유저 해시, 옵션, Salt를 모두 입력해주세요.');
       setProposalDetail(null);
       setSelectedBlock(null);
       return;
@@ -101,6 +103,14 @@ const BallotValidation = () => {
           onChange={e => setOption(e.target.value)}
           className="auth-input"
         />
+        {/* ✅ Salt 입력칸 추가 */}
+        <input
+          type="text"
+          placeholder="Salt 입력"
+          value={salt}
+          onChange={e => setSalt(e.target.value)}
+          className="auth-input"
+        />
       </div>
 
       <div style={{ marginBottom: 20 }}>
@@ -123,19 +133,20 @@ const BallotValidation = () => {
       {error && <div className="error-box">{error}</div>}
 
       {proposalDetail && (
-        <div style={{ marginBottom: 20 }}>
-          <h3>투표 관련 블록 목록</h3>
-          {proposalDetail.block_heights.map(({ height }) => (
-            <button
-              key={height}
-              style={{ margin: '5px' }}
-              onClick={() => fetchBlockData(height)}
-            >
-              블록 높이: {height}
-            </button>
-          ))}
-        </div>
-      )}
+  <div style={{ marginBottom: 20 }}>
+    <h3>투표 관련 블록 목록</h3>
+    {proposalDetail.block_heights.map(({ height }) => (
+      <button
+        key={height}
+        style={{ margin: '5px' }}
+        onClick={() => fetchBlockData(height)}
+      >
+        블록 높이: {height}
+      </button>
+    ))}
+  </div>
+)}
+
 
       {selectedBlock && (
         <div

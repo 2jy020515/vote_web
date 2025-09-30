@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import API from '../api/axiosConfig';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import '../App.css';
 
 const Proposal = () => {
   const [voteType, setVoteType] = useState('찬반');
   const [topic, setTopic] = useState('');
-  const [deadline, setDeadline] = useState(''); // 마감 기한 (날짜+시간)
+  const [deadline, setDeadline] = useState(null);
   const [options, setOptions] = useState(['찬성', '반대']);
 
   const handleVoteTypeChange = (type) => {
@@ -34,7 +36,7 @@ const Proposal = () => {
     }
 
     const now = new Date();
-    const endTime = new Date(deadline);
+    const endTime = deadline;
     const diffMs = endTime - now;
 
     if (diffMs <= 0) {
@@ -56,7 +58,7 @@ const Proposal = () => {
       if (res.data.success) {
         alert('✅ 투표가 정상적으로 생성되었습니다!');
         setTopic('');
-        setDeadline('');
+        setDeadline(null);
         setOptions(voteType === '찬반' ? ['찬성', '반대'] : ['', '']);
       } else {
         alert(res.data.message || '❌ 서버 오류가 발생했습니다.');
@@ -102,10 +104,53 @@ const Proposal = () => {
       />
 
       <label>마감 기한</label>
-      <input
-        type="datetime-local"
-        value={deadline}
-        onChange={(e) => setDeadline(e.target.value)}
+      <DatePicker
+        selected={deadline}
+        onChange={(date) => setDeadline(date)}
+        showTimeSelect
+        timeIntervals={5}
+        dateFormat="MMMM d, yyyy h:mm aa"
+        placeholderText="마감 기한을 선택해주세요"
+        renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '4px 8px',
+            }}
+          >
+            <button
+              onClick={decreaseMonth}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#000',
+                fontSize: '18px',
+                cursor: 'pointer',
+              }}
+            >
+              {'<'}
+            </button>
+
+            <span style={{ fontWeight: 'bold', fontSize: '14px' }}>
+              {date.toLocaleString('en-US', { month: 'long', year: 'numeric' })}
+            </span>
+
+            <button
+              onClick={increaseMonth}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#000',
+                fontSize: '18px',
+                cursor: 'pointer',
+              }}
+            >
+              {'>'}
+            </button>
+          </div>
+        )}
       />
 
       {voteType === '안건' && (
@@ -133,14 +178,15 @@ const Proposal = () => {
             ))}
           </div>
 
-          {/* 기존 버튼 유지하되 클래스 추가해서 색만 바꿈 */}
           <button type="button" className="add-option-btn" onClick={addOption}>
             안건 추가
           </button>
         </>
       )}
 
-      <button type="button" className="submit-btn" onClick={handleSubmit}>투표 생성</button>
+      <button type="button" className="submit-btn" onClick={handleSubmit}>
+        투표 생성
+      </button>
     </div>
   );
 };

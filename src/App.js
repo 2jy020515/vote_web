@@ -88,9 +88,16 @@ const AppContent = () => {
           <NavLink to="/ballot-validation" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
             <span>투표 검증</span>
           </NavLink>
-          <a href="http://explorer.ai-capstone.store:8081" className="nav-link" target="_blank" rel="noopener noreferrer">
+          <a
+            href="http://explorer.ai-capstone.store:8081"
+            className="nav-link nav-link-tooltip"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-tooltip="http://explorer.ai-capstone.store:8081"
+          >
             <span>블록 조회</span>
           </a>
+
         </nav>
 
         <div className="auth-buttons">
