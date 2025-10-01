@@ -42,25 +42,25 @@ const Submit = () => {
       setError("⚠️ Salt를 입력하세요.");
       return;
     }
-
+  
     const submitVote = async () => {
       const userHash = localStorage.getItem("userHash");
-      const combined = `${userHash}|${poll.topic}|${poll.options[selected]}|${salt}`;
-      
-
+  
+      const hashedSalt = sha256(salt);
+  
       const payload = {
         topic: poll.topic,
         option: poll.options[selected],
-        salt: salt,
+        salt: hashedSalt,
       };
-
+  
       const res = await API.post('/api/v1/vote/submit', payload, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           "X-User-Hash": userHash,
         },
       });
-
+  
       const data = res.data;
 
       if (data.status === "REFRESHED_TOKEN") {

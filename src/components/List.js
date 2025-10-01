@@ -9,6 +9,7 @@ const List = () => {
   const [tab, setTab] = useState('active');
   const [selectedPoll, setSelectedPoll] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState(''); // 🔥 검색어 상태 추가
   const pollsPerPage = 10;
   const navigate = useNavigate();
 
@@ -49,7 +50,10 @@ const List = () => {
     }
   };
 
-  const filteredPolls = polls.filter(poll => tab === 'active' ? !poll.expired : poll.expired);
+  const filteredPolls = polls
+    .filter(poll => tab === 'active' ? !poll.expired : poll.expired)
+    .filter(poll => poll.topic.toLowerCase().includes(searchQuery.toLowerCase()));
+
   const indexOfLastPoll = currentPage * pollsPerPage;
   const indexOfFirstPoll = indexOfLastPoll - pollsPerPage;
   const currentPolls = filteredPolls.slice(indexOfFirstPoll, indexOfLastPoll);
@@ -66,6 +70,17 @@ const List = () => {
   return (
     <div className="proposal-form">
       <h2>투표 목록</h2>
+
+      <div style={{ marginBottom: '15px' }}>
+        <input
+          type="text"
+          placeholder="토픽으로 검색..."
+          value={searchQuery}
+          onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+          className="auth-input"
+          style={{ width: '200%', maxWidth: '500px' }}
+        />
+      </div>
 
       <div className="radio-tab">
         <label>
@@ -92,7 +107,9 @@ const List = () => {
 
       {filteredPolls.length === 0 ? (
         <div className="no-polls-message">
-          {tab === 'active' ? '진행 중인 투표가 없습니다.' : '마감된 투표가 없습니다.'}
+          {tab === 'active'
+            ? '진행 중인 투표가 없습니다.'
+            : '마감된 투표가 없습니다.'}
         </div>
       ) : (
         <>

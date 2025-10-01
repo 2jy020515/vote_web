@@ -21,11 +21,13 @@ const BallotValidation = () => {
       setBallotHash('');
       return;
     }
+
+    const hashedSalt = sha256(salt);
   
-    const combined = `"${userHash}"|"${topic}"|"${option}"|"${salt}"`;
+    const combined = `"${userHash}"|"${topic}"|"${option}"|"${hashedSalt}"`;
     setBallotHash(sha256(combined));
   }, [userHash, topic, option, salt]);
-
+  
   const fetchProposalDetail = async () => {
     if (!topic || !userHash || !option) {
       setError('토픽, 유저 해시, 옵션, Salt를 모두 입력해주세요.');
