@@ -21,8 +21,8 @@ const BallotValidation = () => {
       setBallotHash('');
       return;
     }
-    // ✅ salt까지 포함하여 ballotHash 계산
-    const combined = `${userHash}|${topic}|${option}|${salt}`;
+  
+    const combined = `"${userHash}"|"${topic}"|"${option}"|"${salt}"`;
     setBallotHash(sha256(combined));
   }, [userHash, topic, option, salt]);
 
@@ -103,7 +103,6 @@ const BallotValidation = () => {
           onChange={e => setOption(e.target.value)}
           className="auth-input"
         />
-        {/* ✅ Salt 입력칸 추가 */}
         <input
           type="text"
           placeholder="Salt 입력"
@@ -133,20 +132,19 @@ const BallotValidation = () => {
       {error && <div className="error-box">{error}</div>}
 
       {proposalDetail && (
-  <div style={{ marginBottom: 20 }}>
-    <h3>투표 관련 블록 목록</h3>
-    {proposalDetail.block_heights.map(({ height }) => (
-      <button
-        key={height}
-        style={{ margin: '5px' }}
-        onClick={() => fetchBlockData(height)}
-      >
-        블록 높이: {height}
-      </button>
-    ))}
-  </div>
-)}
-
+        <div style={{ marginBottom: 20 }}>
+          <h3>투표 관련 블록 목록</h3>
+          {proposalDetail.block_heights.map(({ height }) => (
+            <button
+              key={height}
+              style={{ margin: '5px' }}
+              onClick={() => fetchBlockData(height)}
+            >
+              블록 높이: {height}
+            </button>
+          ))}
+        </div>
+      )}
 
       {selectedBlock && (
         <div
