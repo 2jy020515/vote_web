@@ -89,11 +89,11 @@ const AppContent = () => {
             <span>투표 검증</span>
           </NavLink>
           <a
-            href="http://explorer.ai-capstone.store:8081"
+            href="https://explorer.jw-capstone.store"
             className="nav-link nav-link-tooltip"
             target="_blank"
             rel="noopener noreferrer"
-            data-tooltip="http://explorer.ai-capstone.store:8081"
+            data-tooltip="https://explorer.jw-capstone.store"
           >
             <span>블록 조회</span>
           </a>
