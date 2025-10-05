@@ -876,7 +876,7 @@ main {
 
 .submit-btn {
   display: inline-block;
-  min-width: 100px;   /* 최소 폭만 설정 */
+  min-width: 100px;
   padding: 12px 24px;
   background-color: #000;
   color: #fff;

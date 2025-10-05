@@ -6,7 +6,7 @@ import '../App.css';
 const Login = () => {
   const [form, setForm] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
-  const [resetMode, setResetMode] = useState(false);   // ✅ 비밀번호 찾기 모드
+  const [resetMode, setResetMode] = useState(false);
   const [resetForm, setResetForm] = useState({
     username: '',
     email: '',
@@ -15,15 +15,14 @@ const Login = () => {
     code: '',
     new_password: ''
   });
-  const [uid, setUid] = useState(null);                // ✅ email-verification 응답 UID 저장
-  const [step, setStep] = useState(1);                 // 1: 정보 입력 → 2: 코드 & 새비번 입력
+  const [uid, setUid] = useState(null);
+  const [step, setStep] = useState(1);
   const navigate = useNavigate();
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
   const handleResetChange = (e) =>
     setResetForm({ ...resetForm, [e.target.name]: e.target.value });
 
-  /** ------------------- 로그인 ------------------- */
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
@@ -62,7 +61,6 @@ const Login = () => {
     }
   };
 
-  /** ------------------- 이메일 인증 요청 ------------------- */
   const handleEmailVerification = async () => {
     const { username, email, real_name, phone_number } = resetForm;
     if (!username || !email || !real_name || !phone_number) {
@@ -75,7 +73,7 @@ const Login = () => {
       });
       if (res.data.success) {
         alert('✅ 인증 메일이 발송되었습니다.');
-        setUid(res.data.uid);    // 백엔드에서 반환하는 UID
+        setUid(res.data.uid);
         setStep(2);
       } else {
         alert(res.data.message || '❌ 인증 메일 발송 실패');
@@ -85,7 +83,6 @@ const Login = () => {
     }
   };
 
-  /** ------------------- 비밀번호 재설정 ------------------- */
   const handleResetPassword = async () => {
     const { code, new_password } = resetForm;
     if (!code || !new_password) {
