@@ -69,7 +69,11 @@ const Login = () => {
     }
     try {
       const res = await API.post('/api/v1/user/email-verification', {
-        username, email, real_name, phone_number
+        username,
+        email, 
+        real_name, 
+        phone_number,
+        category: "reset-password"
       });
       if (res.data.success) {
         alert('✅ 인증 메일이 발송되었습니다.');
@@ -84,7 +88,7 @@ const Login = () => {
   };
 
   const handleResetPassword = async () => {
-    const { code, new_password } = resetForm;
+    const { username, email, real_name, phone_number, code, new_password } = resetForm;
     if (!code || !new_password) {
       alert('인증 코드와 새 비밀번호를 입력해주세요.');
       return;
@@ -92,21 +96,32 @@ const Login = () => {
     try {
       const res = await API.put('/api/v1/user/reset-password', {
         uid,
-        code,
-        new_password
+        username,
+        email,
+        real_name,
+        phone_number,
+        new_password,
+        verification_code: code
       });
       if (res.data.success) {
         alert('✅ 비밀번호가 성공적으로 변경되었습니다.');
         setResetMode(false);
         setStep(1);
-        setResetForm({ username: '', email: '', real_name: '', phone_number: '', code: '', new_password: '' });
+        setResetForm({
+          username: '',
+          email: '',
+          real_name: '',
+          phone_number: '',
+          code: '',
+          new_password: ''
+        });
       } else {
         alert(res.data.message || '❌ 비밀번호 변경 실패');
       }
     } catch (err) {
       alert(err.response?.data?.message || '🚨 서버 오류');
     }
-  };
+  };  
 
   return (
     <div className="proposal-form login-container">

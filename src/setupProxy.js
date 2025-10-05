@@ -4,7 +4,7 @@ module.exports = function (app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'http://l2.ai-capstone.store:8081',
+      target: 'https://voting.jw-capstone.store',
       changeOrigin: true,
     })
   );
@@ -12,7 +12,7 @@ module.exports = function (app) {
   app.use(
     '/explorer',
     createProxyMiddleware({
-      target: 'http://l4.ai-capstone.store:8081',
+      target: 'https://voting.jw-capstone.store',
       changeOrigin: true,
     })
   );

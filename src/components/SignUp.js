@@ -52,6 +52,7 @@ const SignUp = () => {
         real_name: form.real_name,
         phone_number: form.phone_number,
         email: form.email,
+        category: "register"
       });
 
       if (res.data.success) {
