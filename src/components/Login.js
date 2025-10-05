@@ -94,7 +94,7 @@ const Login = () => {
       return;
     }
     try {
-      const res = await API.put('/api/v1/user/reset-password', {
+      const res = await API.put('/api/v1/user/reset/user-password', {
         uid,
         username,
         email,
