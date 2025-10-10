@@ -10,6 +10,8 @@ const Proposal = () => {
   const [deadline, setDeadline] = useState(null);
   const [options, setOptions] = useState(['찬성', '반대']);
 
+  const specialCharRegex = /[^가-힣a-zA-Z0-9 ]/;
+
   const handleVoteTypeChange = (type) => {
     setVoteType(type);
     if (type === '찬반') {
@@ -30,6 +32,18 @@ const Proposal = () => {
 
   const handleSubmit = async () => {
     const trimmedOptions = options.map(opt => opt.trim()).filter(opt => opt !== '');
+
+    if (specialCharRegex.test(topic)) {
+      alert('❌ 투표 이름에 특수문자를 포함할 수 없습니다.');
+      return;
+    }
+    for (let opt of trimmedOptions) {
+      if (specialCharRegex.test(opt)) {
+        alert('❌ 안건(옵션)에는 특수문자를 포함할 수 없습니다.');
+        return;
+      }
+    }
+
     if (!topic || !deadline || trimmedOptions.length < 2) {
       alert('모든 필드를 입력해주세요.');
       return;

@@ -12,6 +12,8 @@ import BallotValidation from './components/BallotValidation';
 import ProtectedRoute from './components/ProtectedRoute';
 import MyPage from './components/MyPage';
 import API from './api/axiosConfig';
+import logo from './assets/verivote.png';
+
 
 function App() {
   return (
@@ -68,7 +70,11 @@ const AppContent = () => {
   return (
     <div className="app-container">
       <header className="navbar">
-        <h1 className="logo">✓OTING</h1>
+      <h1 className="logo">
+  <img src={logo} alt="VeriVote 로고" className="logo-img" />
+  VeriVote
+</h1>
+
         <nav className="nav-links">
           <NavLink to="/" end className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
             <span>투표 생성</span>

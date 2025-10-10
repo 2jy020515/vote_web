@@ -94,26 +94,6 @@ const MyPage = () => {
           <button className="copy-btn" onClick={handleCopy}>복사</button>
         </div>
       </div>
-
-      {!showPasswordForm ? (
-        <button className="back-btn" onClick={() => setShowPasswordForm(true)}>
-          비밀번호 변경
-        </button>
-      ) : (
-        <div className="info-row">
-          <input
-            type="password"
-            placeholder="새 비밀번호 입력"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            className="auth-input"
-          />
-          <button className="back-btn" onClick={handlePasswordChange}>
-            변경하기
-          </button>
-        </div>
-      )}
-
       {error && <p className="error-msg">{error}</p>}
       {success && <p className="success-msg">{success}</p>}
     </div>

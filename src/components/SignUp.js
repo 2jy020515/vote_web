@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     username: '',
     real_name: '',
@@ -12,7 +13,8 @@ const SignUp = () => {
     email: '',
     verification_code: '',
     password: '',
-    srn_part: '',
+    srn_front: '',
+    srn_gender: '',
   });
 
   const navigate = useNavigate();
@@ -23,7 +25,8 @@ const SignUp = () => {
   };
 
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const validateSrnPart = (srn) => /^\d{6}-\d$/.test(srn);
+  const validateSrnFront = (srn) => /^\d{6}$/.test(srn);
+  const validateSrnGender = (gender) => /^\d$/.test(gender);
   const validatePhone = (phone) => /^\d{9,11}$/.test(phone);
   const validateName = (name) => name.length >= 2 && /^[가-힣a-zA-Z]+$/.test(name.trim());
 
@@ -47,6 +50,7 @@ const SignUp = () => {
     }
 
     try {
+      setLoading(true);
       const res = await API.post(`/api/v1/user/email-verification`, {
         username: form.username,
         real_name: form.real_name,
@@ -68,18 +72,26 @@ const SignUp = () => {
         alert('❌ 서버 오류 또는 인증 요청 실패');
       }
       console.error(err.response?.data || err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleRegister = async () => {
-    if (!form.verification_code.trim() || !form.password.trim() || !form.srn_part.trim()) {
-      alert('인증코드, 비밀번호, 주민번호를 모두 입력해주세요.');
+    if (!form.verification_code.trim() || !form.password.trim() || !form.srn_front.trim() || !form.srn_gender.trim()) {
+      alert('인증코드, 비밀번호, 주민번호 앞자리와 성별코드를 모두 입력해주세요.');
       return;
     }
-    if (!validateSrnPart(form.srn_part)) {
-      alert('주민등록번호 형식은 6자리-1자리입니다 (예: 000000-0)');
+    if (!validateSrnFront(form.srn_front)) {
+      alert('주민번호 앞자리는 6자리 숫자여야 합니다 (예: 000000)');
       return;
     }
+    if (!validateSrnGender(form.srn_gender)) {
+      alert('성별 코드는 1자리 숫자여야 합니다 (예: 1)');
+      return;
+    }
+
+    const srn_part = `${form.srn_front}-${form.srn_gender}`;
 
     try {
       const res = await API.post(`/api/v1/user/register`, {
@@ -89,7 +101,7 @@ const SignUp = () => {
         email: form.email,
         verification_code: form.verification_code,
         password: form.password,
-        srn_part: form.srn_part,
+        srn_part: srn_part,
       });
 
       if (res.data.success) {
@@ -142,8 +154,14 @@ const SignUp = () => {
             onChange={handleChange}
             className="auth-input"
           />
-          <button onClick={handleEmailVerification} className="auth-button">
-            이메일 인증하기
+
+          <button
+            onClick={handleEmailVerification}
+            className="auth-button"
+            disabled={loading}
+            style={{ opacity: loading ? 0.6 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
+          >
+            {loading ? '📩 메일 발송 중...' : '이메일 인증하기'}
           </button>
         </>
       )}
@@ -170,13 +188,26 @@ const SignUp = () => {
             onChange={handleChange}
             className="auth-input"
           />
-          <input
-            name="srn_part"
-            placeholder="주민번호 앞6자리-성별1자리 (예: 000000-0)"
-            value={form.srn_part}
-            onChange={handleChange}
-            className="auth-input"
-          />
+
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <input
+              name="srn_front"
+              placeholder="주민번호 앞 6자리 (생년월일)"
+              value={form.srn_front}
+              onChange={handleChange}
+              className="auth-input"
+              maxLength={6}
+            />
+            <input
+              name="srn_gender"
+              placeholder="주민번호 뒤 1자리 (성별)"
+              value={form.srn_gender}
+              onChange={handleChange}
+              className="auth-input"
+              maxLength={1}
+            />
+          </div>
+
           <button onClick={handleRegister} className="auth-button">
             회원가입
           </button>

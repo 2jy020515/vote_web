@@ -968,3 +968,17 @@ main {
 .react-datepicker__time-list {
   font-size: 12px;
 }
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.logo-img {
+  width: 38px;
+  height: 38px;
+  margin-right: 5px;
+  transform: translateY(-5px);
+}
