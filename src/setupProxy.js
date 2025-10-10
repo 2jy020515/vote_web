@@ -4,7 +4,7 @@ module.exports = function (app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'https://voting.jw-capstone.store',
+      target: 'https://verivote.jw-capstone.store',
       changeOrigin: true,
     })
   );
@@ -12,7 +12,7 @@ module.exports = function (app) {
   app.use(
     '/explorer',
     createProxyMiddleware({
-      target: 'https://voting.jw-capstone.store',
+      target: 'https://verivote.jw-capstone.store',
       changeOrigin: true,
     })
   );

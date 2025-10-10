@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     username: '',
     real_name: '',
@@ -14,7 +13,7 @@ const SignUp = () => {
     verification_code: '',
     password: '',
     srn_front: '',
-    srn_gender: '',
+    srn_back: '',
   });
 
   const navigate = useNavigate();
@@ -25,8 +24,6 @@ const SignUp = () => {
   };
 
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const validateSrnFront = (srn) => /^\d{6}$/.test(srn);
-  const validateSrnGender = (gender) => /^\d$/.test(gender);
   const validatePhone = (phone) => /^\d{9,11}$/.test(phone);
   const validateName = (name) => name.length >= 2 && /^[가-힣a-zA-Z]+$/.test(name.trim());
 
@@ -35,7 +32,6 @@ const SignUp = () => {
       alert('아이디, 이름, 전화번호, 이메일을 모두 입력해주세요.');
       return;
     }
-
     if (!validateName(form.real_name)) {
       alert('이름은 2자 이상, 한글 또는 영문만 가능합니다.');
       return;
@@ -50,7 +46,6 @@ const SignUp = () => {
     }
 
     try {
-      setLoading(true);
       const res = await API.post(`/api/v1/user/email-verification`, {
         username: form.username,
         real_name: form.real_name,
@@ -66,32 +61,23 @@ const SignUp = () => {
         alert(res.data.message || '인증 메일 발송 실패');
       }
     } catch (err) {
-      if (err.response?.data?.message) {
-        alert(`❌ ${err.response.data.message}`);
-      } else {
-        alert('❌ 서버 오류 또는 인증 요청 실패');
-      }
+      alert(err.response?.data?.message || '❌ 서버 오류 또는 인증 요청 실패');
       console.error(err.response?.data || err);
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleRegister = async () => {
-    if (!form.verification_code.trim() || !form.password.trim() || !form.srn_front.trim() || !form.srn_gender.trim()) {
-      alert('인증코드, 비밀번호, 주민번호 앞자리와 성별코드를 모두 입력해주세요.');
-      return;
-    }
-    if (!validateSrnFront(form.srn_front)) {
-      alert('주민번호 앞자리는 6자리 숫자여야 합니다 (예: 000000)');
-      return;
-    }
-    if (!validateSrnGender(form.srn_gender)) {
-      alert('성별 코드는 1자리 숫자여야 합니다 (예: 1)');
+    if (!form.verification_code.trim() || !form.password.trim() || !form.srn_front.trim() || !form.srn_back.trim()) {
+      alert('인증코드, 비밀번호, 주민번호를 모두 입력해주세요.');
       return;
     }
 
-    const srn_part = `${form.srn_front}-${form.srn_gender}`;
+    if (!/^\d{6}$/.test(form.srn_front) || !/^\d$/.test(form.srn_back)) {
+      alert('주민등록번호 형식은 앞 6자리와 뒤 1자리 숫자여야 합니다.');
+      return;
+    }
+
+    const srn_part = `${form.srn_front}-${form.srn_back}`;
 
     try {
       const res = await API.post(`/api/v1/user/register`, {
@@ -101,7 +87,7 @@ const SignUp = () => {
         email: form.email,
         verification_code: form.verification_code,
         password: form.password,
-        srn_part: srn_part,
+        srn_part
       });
 
       if (res.data.success) {
@@ -111,11 +97,7 @@ const SignUp = () => {
         alert(res.data.message || '회원가입 실패');
       }
     } catch (err) {
-      if (err.response?.data?.message) {
-        alert(`❌ ${err.response.data.message}`);
-      } else {
-        alert('❌ 서버 오류 또는 회원가입 실패');
-      }
+      alert(err.response?.data?.message || '❌ 서버 오류 또는 회원가입 실패');
       console.error(err.response?.data || err);
     }
   };
@@ -131,6 +113,7 @@ const SignUp = () => {
             placeholder="아이디"
             value={form.username}
             onChange={handleChange}
+            style={{ marginBottom: '16px' }}
             className="auth-input"
           />
           <input
@@ -138,6 +121,7 @@ const SignUp = () => {
             placeholder="이름"
             value={form.real_name}
             onChange={handleChange}
+            style={{ marginBottom: '16px' }}
             className="auth-input"
           />
           <input
@@ -145,6 +129,7 @@ const SignUp = () => {
             placeholder="전화번호 (숫자만)"
             value={form.phone_number}
             onChange={handleChange}
+            style={{ marginBottom: '16px' }}
             className="auth-input"
           />
           <input
@@ -152,32 +137,27 @@ const SignUp = () => {
             placeholder="이메일"
             value={form.email}
             onChange={handleChange}
+            style={{ marginBottom: '16px' }}
             className="auth-input"
           />
-
-          <button
-            onClick={handleEmailVerification}
-            className="auth-button"
-            disabled={loading}
-            style={{ opacity: loading ? 0.6 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
-          >
-            {loading ? '📩 메일 발송 중...' : '이메일 인증하기'}
+          <button onClick={handleEmailVerification} className="auth-button">
+            이메일 인증하기
           </button>
         </>
       )}
 
       {step === 2 && (
         <>
-          <div style={{ marginBottom: 10 }}>
-            <p style={{ fontSize: '14px', color: '#555' }}>
-              📩 입력한 이메일로 발송된 인증코드를 입력해주세요.
-            </p>
-          </div>
+          <p style={{ fontSize: '14px', color: '#555', marginBottom: '16px' }}>
+            📩 입력한 이메일로 발송된 인증코드를 입력해주세요.
+          </p>
+
           <input
             name="verification_code"
             placeholder="인증코드"
             value={form.verification_code}
             onChange={handleChange}
+            style={{ marginBottom: '16px' }}
             className="auth-input"
           />
           <input
@@ -186,25 +166,26 @@ const SignUp = () => {
             placeholder="비밀번호"
             value={form.password}
             onChange={handleChange}
+            style={{ marginBottom: '16px' }}
             className="auth-input"
           />
 
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
             <input
               name="srn_front"
               placeholder="주민번호 앞 6자리 (생년월일)"
               value={form.srn_front}
               onChange={handleChange}
               className="auth-input"
-              maxLength={6}
+              style={{ flex: 1 }}
             />
             <input
-              name="srn_gender"
+              name="srn_back"
               placeholder="주민번호 뒤 1자리 (성별)"
-              value={form.srn_gender}
+              value={form.srn_back}
               onChange={handleChange}
               className="auth-input"
-              maxLength={1}
+              style={{ flex: 1 }}
             />
           </div>
 
