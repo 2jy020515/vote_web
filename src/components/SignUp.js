@@ -170,7 +170,7 @@ const SignUp = () => {
             className="auth-input"
           />
 
-          <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', marginBottom: '16px' }}>
             <input
               name="srn_front"
               placeholder="주민번호 앞 6자리 (생년월일)"
