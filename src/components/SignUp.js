@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     username: '',
     real_name: '',
@@ -46,6 +47,7 @@ const SignUp = () => {
     }
 
     try {
+      setLoading(true);
       const res = await API.post(`/api/v1/user/email-verification`, {
         username: form.username,
         real_name: form.real_name,
@@ -63,6 +65,8 @@ const SignUp = () => {
     } catch (err) {
       alert(err.response?.data?.message || '❌ 서버 오류 또는 인증 요청 실패');
       console.error(err.response?.data || err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -140,18 +144,20 @@ const SignUp = () => {
             style={{ marginBottom: '16px' }}
             className="auth-input"
           />
-          <button onClick={handleEmailVerification} className="auth-button">
-            이메일 인증하기
+
+          <button
+            onClick={handleEmailVerification}
+            className="auth-button"
+            disabled={loading}
+            style={{ opacity: loading ? 0.7 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
+          >
+            {loading ? '📨 메일 전송 중...' : '이메일 인증하기'}
           </button>
         </>
       )}
 
       {step === 2 && (
         <>
-          <p style={{ fontSize: '14px', color: '#555', marginBottom: '16px' }}>
-            📩 입력한 이메일로 발송된 인증코드를 입력해주세요.
-          </p>
-
           <input
             name="verification_code"
             placeholder="인증코드"

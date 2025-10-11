@@ -7,6 +7,7 @@ const Login = () => {
   const [form, setForm] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const [resetMode, setResetMode] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [resetForm, setResetForm] = useState({
     username: '',
     email: '',
@@ -68,10 +69,11 @@ const Login = () => {
       return;
     }
     try {
+      setLoading(true);
       const res = await API.post('/api/v1/user/email-verification', {
         username,
-        email, 
-        real_name, 
+        email,
+        real_name,
         phone_number,
         category: "reset-password"
       });
@@ -84,6 +86,8 @@ const Login = () => {
       }
     } catch (err) {
       alert(err.response?.data?.message || '🚨 서버 오류');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -121,7 +125,7 @@ const Login = () => {
     } catch (err) {
       alert(err.response?.data?.message || '🚨 서버 오류');
     }
-  };  
+  };
 
   return (
     <div className="proposal-form login-container">
@@ -185,8 +189,14 @@ const Login = () => {
                 onChange={handleResetChange}
                 className="auth-input"
               />
-              <button className="submit-btn" onClick={handleEmailVerification}>
-                이메일 인증하기
+
+              <button
+                className="submit-btn"
+                onClick={handleEmailVerification}
+                disabled={loading}
+                style={{ opacity: loading ? 0.7 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
+              >
+                {loading ? '📨 메일 전송 중...' : '이메일 인증하기'}
               </button>
             </>
           )}

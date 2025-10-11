@@ -4,10 +4,10 @@ import '../App.css';
 
 const MyPage = () => {
   const [userInfo, setUserInfo] = useState(null);
-  const [newPassword, setNewPassword] = useState('');
-  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  // const [newPassword, setNewPassword] = useState('');
+  // const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  // const [success, setSuccess] = useState('');
 
   const uid = localStorage.getItem('uid');
   const username = localStorage.getItem('username');
@@ -30,6 +30,7 @@ const MyPage = () => {
       });
   }, [uid, username, userhash]);
 
+  /*
   const handlePasswordChange = async () => {
     if (!newPassword) {
       setError('⚠️ 새 비밀번호를 입력해주세요.');
@@ -55,6 +56,7 @@ const MyPage = () => {
       console.error(err);
     }
   };
+  */
 
   const handleCopy = () => {
     if (userInfo?.user_hash) {
@@ -94,8 +96,30 @@ const MyPage = () => {
           <button className="copy-btn" onClick={handleCopy}>복사</button>
         </div>
       </div>
+
+      {/*
+      {!showPasswordForm ? (
+        <button className="back-btn" onClick={() => setShowPasswordForm(true)}>
+          비밀번호 변경
+        </button>
+      ) : (
+        <div className="info-row">
+          <input
+            type="password"
+            placeholder="새 비밀번호 입력"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            className="auth-input"
+          />
+          <button className="back-btn" onClick={handlePasswordChange}>
+            변경하기
+          </button>
+        </div>
+      )}
+      */}
+
       {error && <p className="error-msg">{error}</p>}
-      {success && <p className="success-msg">{success}</p>}
+      {/* success && <p className="success-msg">{success}</p> */}
     </div>
   );
 };
