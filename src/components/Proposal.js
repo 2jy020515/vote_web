@@ -23,7 +23,7 @@ const Proposal = () => {
 
   const handleOptionChange = (index, value) => {
     const updated = [...options];
-    updated[index] = value;
+    updated[index] = value.trimStart();
     setOptions(updated);
   };
 
@@ -31,9 +31,10 @@ const Proposal = () => {
   const removeOption = (index) => setOptions(options.filter((_, i) => i !== index));
 
   const handleSubmit = async () => {
+    const trimmedTopic = topic.trim();
     const trimmedOptions = options.map(opt => opt.trim()).filter(opt => opt !== '');
 
-    if (specialCharRegex.test(topic)) {
+    if (specialCharRegex.test(trimmedTopic)) {
       alert('❌ 투표 이름에 특수문자를 포함할 수 없습니다.');
       return;
     }
@@ -44,7 +45,7 @@ const Proposal = () => {
       }
     }
 
-    if (!topic || !deadline || trimmedOptions.length < 2) {
+    if (!trimmedTopic || !deadline || trimmedOptions.length < 2) {
       alert('모든 필드를 입력해주세요.');
       return;
     }
@@ -61,7 +62,7 @@ const Proposal = () => {
     const durationMinutes = Math.floor(diffMs / 1000 / 60);
 
     const payload = {
-      topic,
+      topic: trimmedTopic,
       duration: durationMinutes,
       options: trimmedOptions,
     };
@@ -114,7 +115,7 @@ const Proposal = () => {
         type="text"
         placeholder="투표 이름을 입력해주세요."
         value={topic}
-        onChange={(e) => setTopic(e.target.value)}
+        onChange={(e) => setTopic(e.target.value.trimStart())}
       />
 
       <label>마감 기한</label>

@@ -20,20 +20,23 @@ const Login = () => {
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value.trim() });
   const handleResetChange = (e) =>
-    setResetForm({ ...resetForm, [e.target.name]: e.target.value });
+    setResetForm({ ...resetForm, [e.target.name]: e.target.value.trim() });
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
-    if (!form.username || !form.password) {
+    if (!form.username.trim() || !form.password.trim()) {
       setError('⚠️ 모든 입력칸을 채워주세요.');
       return;
     }
 
     try {
-      const res = await API.post('/api/v1/user/login', form);
+      const res = await API.post('/api/v1/user/login', {
+        username: form.username.trim(),
+        password: form.password.trim()
+      });
       if (res.data.success) {
         let accessToken = res.headers['authorization'];
         const userHash = res.data.user_hash;
@@ -64,17 +67,17 @@ const Login = () => {
 
   const handleEmailVerification = async () => {
     const { username, email, real_name, phone_number } = resetForm;
-    if (!username || !email || !real_name || !phone_number) {
+    if (!username.trim() || !email.trim() || !real_name.trim() || !phone_number.trim()) {
       alert('모든 정보를 입력해주세요.');
       return;
     }
     try {
       setLoading(true);
       const res = await API.post('/api/v1/user/email-verification', {
-        username,
-        email,
-        real_name,
-        phone_number,
+        username: username.trim(),
+        email: email.trim(),
+        real_name: real_name.trim(),
+        phone_number: phone_number.trim(),
         category: "reset-password"
       });
       if (res.data.success) {
@@ -93,19 +96,19 @@ const Login = () => {
 
   const handleResetPassword = async () => {
     const { username, email, real_name, phone_number, code, new_password } = resetForm;
-    if (!code || !new_password) {
+    if (!code.trim() || !new_password.trim()) {
       alert('인증 코드와 새 비밀번호를 입력해주세요.');
       return;
     }
     try {
       const res = await API.put('/api/v1/user/reset/user-password', {
         uid,
-        username,
-        email,
-        real_name,
-        phone_number,
-        new_password,
-        verification_code: code
+        username: username.trim(),
+        email: email.trim(),
+        real_name: real_name.trim(),
+        phone_number: phone_number.trim(),
+        new_password: new_password.trim(),
+        verification_code: code.trim()
       });
       if (res.data.success) {
         alert('✅ 비밀번호가 성공적으로 변경되었습니다.');

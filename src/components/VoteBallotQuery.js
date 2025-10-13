@@ -22,7 +22,7 @@ const VoteBallotQuery = () => {
     }
 
     try {
-      const res = await API.get(`/api/v1/query/${userHash}/votes`);
+      const res = await API.get(`/api/v1/query/${userHash.trim()}/votes`);
       if (res.data.success) {
         const list = res.data.ballot_list || [];
 
@@ -30,7 +30,7 @@ const VoteBallotQuery = () => {
           list.map(async (ballot) => {
             try {
               const detailRes = await API.get(
-                `/api/v1/query/proposal/${encodeURIComponent(ballot.topic)}/detail`
+                `/api/v1/query/proposal/${encodeURIComponent(ballot.topic.trim())}/detail`
               );
               if (detailRes.data.success) {
                 return { ...ballot, ...detailRes.data.proposal };
@@ -58,7 +58,7 @@ const VoteBallotQuery = () => {
 
     try {
       const res = await API.get(
-        `/api/v1/query/proposal/${encodeURIComponent(ballot.topic)}/detail`
+        `/api/v1/query/proposal/${encodeURIComponent(ballot.topic.trim())}/detail`
       );
       if (res.data.success) {
         setSelectedVote(res.data.proposal);
@@ -76,7 +76,7 @@ const VoteBallotQuery = () => {
       <input
         type="text"
         value={hash}
-        onChange={(e) => setHash(e.target.value)}
+        onChange={(e) => setHash(e.target.value.trim())}
         placeholder="유저 해시 입력"
       />
       <button onClick={handleSearch}>조회</button>

@@ -8,7 +8,7 @@ const BallotValidation = () => {
   const [userHash, setUserHash] = useState('');
   const [topic, setTopic] = useState('');
   const [option, setOption] = useState('');
-  const [salt, setSalt] = useState('');           // ✅ salt 상태 추가
+  const [salt, setSalt] = useState('');
   const [ballotHash, setBallotHash] = useState('');
   const [proposalDetail, setProposalDetail] = useState(null);
   const [selectedBlock, setSelectedBlock] = useState(null);
@@ -22,14 +22,13 @@ const BallotValidation = () => {
       return;
     }
 
-    const hashedSalt = sha256(salt);
-  
-    const combined = `"${userHash}"|"${topic}"|"${option}"|"${hashedSalt}"`;
+    const hashedSalt = sha256(salt.trim());
+    const combined = `"${userHash.trim()}"|"${topic.trim()}"|"${option.trim()}"|"${hashedSalt}"`;
     setBallotHash(sha256(combined));
   }, [userHash, topic, option, salt]);
   
   const fetchProposalDetail = async () => {
-    if (!topic || !userHash || !option) {
+    if (!topic.trim() || !userHash.trim() || !option.trim()) {
       setError('토픽, 유저 해시, 옵션, Salt를 모두 입력해주세요.');
       setProposalDetail(null);
       setSelectedBlock(null);
@@ -42,7 +41,7 @@ const BallotValidation = () => {
       setProposalDetail(null);
       setSelectedBlock(null);
 
-      const res = await API.get(`/api/v1/query/proposal/${encodeURIComponent(topic)}/detail`);
+      const res = await API.get(`/api/v1/query/proposal/${encodeURIComponent(topic.trim())}/detail`);
 
       if (res.data.success && res.data.proposal) {
         if (res.data.proposal.block_heights && res.data.proposal.block_heights.length > 0) {
@@ -85,7 +84,7 @@ const BallotValidation = () => {
           type="text"
           placeholder="투표 이름 입력"
           value={topic}
-          onChange={e => setTopic(e.target.value)}
+          onChange={e => setTopic(e.target.value.trim())}
           className="auth-input"
         />
       </div>
@@ -95,21 +94,21 @@ const BallotValidation = () => {
           type="text"
           placeholder="유저 해시 입력"
           value={userHash}
-          onChange={e => setUserHash(e.target.value)}
+          onChange={e => setUserHash(e.target.value.trim())}
           className="auth-input"
         />
         <input
           type="text"
           placeholder="투표 옵션 입력"
           value={option}
-          onChange={e => setOption(e.target.value)}
+          onChange={e => setOption(e.target.value.trim())}
           className="auth-input"
         />
         <input
           type="text"
           placeholder="Salt 입력"
           value={salt}
-          onChange={e => setSalt(e.target.value)}
+          onChange={e => setSalt(e.target.value.trim())}
           className="auth-input"
         />
       </div>

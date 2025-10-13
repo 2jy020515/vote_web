@@ -13,8 +13,14 @@ const VoteDetailQuery = () => {
     setProposal(null);
     setShowJson(false);
 
+    const trimmedTopic = topic.trim();
+    if (!trimmedTopic) {
+      setError('투표 이름을 입력해주세요.');
+      return;
+    }
+
     try {
-      const res = await API.get(`/api/v1/query/proposal/${topic}/detail`);
+      const res = await API.get(`/api/v1/query/proposal/${encodeURIComponent(trimmedTopic)}/detail`);
 
       if (res.data.success) {
         setProposal(res.data.proposal);
@@ -33,7 +39,7 @@ const VoteDetailQuery = () => {
         type="text"
         placeholder="투표 이름 입력"
         value={topic}
-        onChange={e => setTopic(e.target.value)}
+        onChange={e => setTopic(e.target.value.trimStart())}
       />
       <button onClick={handleSearch}>조회</button>
 

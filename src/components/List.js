@@ -9,7 +9,7 @@ const List = () => {
   const [tab, setTab] = useState('active');
   const [selectedPoll, setSelectedPoll] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState(''); // 🔥 검색어 상태 추가
+  const [searchQuery, setSearchQuery] = useState('');
   const pollsPerPage = 10;
   const navigate = useNavigate();
 
@@ -35,7 +35,7 @@ const List = () => {
         return;
       }
       try {
-        const res = await API.get(`/api/v1/query/proposal/${poll.topic}/detail`);
+        const res = await API.get(`/api/v1/query/proposal/${poll.topic.trim()}/detail`);
         if (res.data.success) {
           setSelectedPoll(res.data.proposal);
         } else {
@@ -46,13 +46,13 @@ const List = () => {
         setError("서버 오류");
       }
     } else {
-      navigate(`/submit/${encodeURIComponent(poll.topic)}`);
+      navigate(`/submit/${encodeURIComponent(poll.topic.trim())}`);
     }
   };
 
   const filteredPolls = polls
     .filter(poll => tab === 'active' ? !poll.expired : poll.expired)
-    .filter(poll => poll.topic.toLowerCase().includes(searchQuery.toLowerCase()));
+    .filter(poll => poll.topic.toLowerCase().includes(searchQuery.trim().toLowerCase()));
 
   const indexOfLastPoll = currentPage * pollsPerPage;
   const indexOfFirstPoll = indexOfLastPoll - pollsPerPage;
@@ -76,7 +76,7 @@ const List = () => {
           type="text"
           placeholder="토픽으로 검색..."
           value={searchQuery}
-          onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+          onChange={(e) => { setSearchQuery(e.target.value.trimStart()); setCurrentPage(1); }}
           className="auth-input"
           style={{ width: '200%', maxWidth: '500px' }}
         />
@@ -115,17 +115,17 @@ const List = () => {
         <>
           <div className="poll-list-vertical">
             {currentPolls.map(poll => (
-              <div key={poll.topic} className="poll-item-wrapper">
+              <div key={poll.topic.trim()} className="poll-item-wrapper">
                 <button
                   className={`poll-card full-width ${poll.expired ? 'expired' : ''}`}
                   onClick={() => handleSelectPoll(poll)}
                 >
-                  {poll.topic}
+                  {poll.topic.trim()}
                 </button>
 
-                {selectedPoll && selectedPoll.topic === poll.topic && poll.expired && (
+                {selectedPoll && selectedPoll.topic === poll.topic.trim() && poll.expired && (
                   <div className="proposal-detail">
-                    <h3>{selectedPoll.topic}</h3>
+                    <h3>{selectedPoll.topic.trim()}</h3>
                     <p>투표 기간: {selectedPoll.duration}분</p>
                     <p>마감 여부: {selectedPoll.expired ? '종료됨' : '진행 중'}</p>
                     <p>생성일: {new Date(selectedPoll.created_at).toLocaleString()}</p>
@@ -133,7 +133,7 @@ const List = () => {
                     <div className="vote-options">
                       {selectedPoll.options.map((opt, idx) => (
                         <div key={idx} className="vote-option">
-                          {opt} ({selectedPoll.result.options[opt] || 0})
+                          {opt.trim()} ({selectedPoll.result.options[opt.trim()] || 0})
                         </div>
                       ))}
                     </div>

@@ -26,7 +26,7 @@ const VoteListQuery = () => {
           ? true
           : value === 'false'
           ? false
-          : value,
+          : value.trim(),
     });
   };
 
@@ -41,10 +41,14 @@ const VoteListQuery = () => {
 
     try {
       const res = await API.get(`/api/v1/query/proposal/list`, {
-        params: form,
+        params: {
+          ...form,
+          sortBy: form.sortBy.trim(),
+          sortOrder: form.sortOrder.trim(),
+        },
         headers: {
           Authorization: `Bearer ${token}`,
-          'X-User-Hash': userHash,
+          'X-User-Hash': userHash.trim(),
         },
       });
 
@@ -53,10 +57,14 @@ const VoteListQuery = () => {
         localStorage.setItem('accessToken', newToken);
 
         const retryRes = await API.get(`/api/v1/query/proposal/list`, {
-          params: form,
+          params: {
+            ...form,
+            sortBy: form.sortBy.trim(),
+            sortOrder: form.sortOrder.trim(),
+          },
           headers: {
             Authorization: `Bearer ${newToken}`,
-            'X-User-Hash': userHash,
+            'X-User-Hash': userHash.trim(),
           },
         });
         setResult(retryRes.data);
@@ -112,9 +120,10 @@ const VoteListQuery = () => {
       <input type="number" name="page" value={form.page} onChange={handleChange} />
 
       <div className="form-group">
-      <label>한 페이지당 개수</label>
-      <input type="number" name="limit" value={form.limit} onChange={handleChange} />
+        <label>한 페이지당 개수</label>
+        <input type="number" name="limit" value={form.limit} onChange={handleChange} />
       </div>
+
       <button onClick={fetchVotes}>목록 조회</button>
 
       {error && <div className="error-message" style={{ color: 'red', marginTop: '10px' }}>{error.message}</div>}

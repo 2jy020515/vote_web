@@ -21,12 +21,12 @@ const SignUp = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    setForm({ ...form, [name]: value.trim() });
   };
 
-  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const validatePhone = (phone) => /^\d{9,11}$/.test(phone);
-  const validateName = (name) => name.length >= 2 && /^[가-힣a-zA-Z]+$/.test(name.trim());
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const validatePhone = (phone) => /^\d{9,11}$/.test(phone.trim());
+  const validateName = (name) => name.trim().length >= 2 && /^[가-힣a-zA-Z]+$/.test(name.trim());
 
   const handleEmailVerification = async () => {
     if (!form.username.trim() || !form.real_name.trim() || !form.phone_number.trim() || !form.email.trim()) {
@@ -49,10 +49,10 @@ const SignUp = () => {
     try {
       setLoading(true);
       const res = await API.post(`/api/v1/user/email-verification`, {
-        username: form.username,
-        real_name: form.real_name,
-        phone_number: form.phone_number,
-        email: form.email,
+        username: form.username.trim(),
+        real_name: form.real_name.trim(),
+        phone_number: form.phone_number.trim(),
+        email: form.email.trim(),
         category: "register"
       });
 
@@ -76,21 +76,21 @@ const SignUp = () => {
       return;
     }
 
-    if (!/^\d{6}$/.test(form.srn_front) || !/^\d$/.test(form.srn_back)) {
+    if (!/^\d{6}$/.test(form.srn_front.trim()) || !/^\d$/.test(form.srn_back.trim())) {
       alert('주민등록번호 형식은 앞 6자리와 뒤 1자리 숫자여야 합니다.');
       return;
     }
 
-    const srn_part = `${form.srn_front}-${form.srn_back}`;
+    const srn_part = `${form.srn_front.trim()}-${form.srn_back.trim()}`;
 
     try {
       const res = await API.post(`/api/v1/user/register`, {
-        username: form.username,
-        real_name: form.real_name,
-        phone_number: form.phone_number,
-        email: form.email,
-        verification_code: form.verification_code,
-        password: form.password,
+        username: form.username.trim(),
+        real_name: form.real_name.trim(),
+        phone_number: form.phone_number.trim(),
+        email: form.email.trim(),
+        verification_code: form.verification_code.trim(),
+        password: form.password.trim(),
         srn_part
       });
 
