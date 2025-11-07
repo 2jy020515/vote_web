@@ -22,13 +22,13 @@ const BallotValidation = () => {
       return;
     }
 
-    const hashedSalt = sha256(salt());
-    const combined = `"${userHash()}"|"${topic()}"|"${option()}"|"${hashedSalt}"`;
+    const hashedSalt = sha256(salt);
+    const combined = `"${userHash}"|"${topic}"|"${option}"|"${hashedSalt}"`;
     setBallotHash(sha256(combined));
   }, [userHash, topic, option, salt]);
   
   const fetchProposalDetail = async () => {
-    if (!topic() || !userHash() || !option()) {
+    if (!topic || !userHash || !option) {
       setError('토픽, 유저 해시, 옵션, Salt를 모두 입력해주세요.');
       setProposalDetail(null);
       setSelectedBlock(null);
@@ -84,7 +84,7 @@ const BallotValidation = () => {
           type="text"
           placeholder="투표 이름 입력"
           value={topic}
-          onChange={e => setTopic(e.target.value())}
+          onChange={e => setTopic(e.target.value)}
           className="auth-input"
         />
       </div>
@@ -94,21 +94,21 @@ const BallotValidation = () => {
           type="text"
           placeholder="유저 해시 입력"
           value={userHash}
-          onChange={e => setUserHash(e.target.value())}
+          onChange={e => setUserHash(e.target.value)}
           className="auth-input"
         />
         <input
           type="text"
           placeholder="투표 옵션 입력"
           value={option}
-          onChange={e => setOption(e.target.value())}
+          onChange={e => setOption(e.target.value)}
           className="auth-input"
         />
         <input
           type="text"
           placeholder="Salt 입력"
           value={salt}
-          onChange={e => setSalt(e.target.value())}
+          onChange={e => setSalt(e.target.value)}
           className="auth-input"
         />
       </div>
